@@ -17,6 +17,6 @@ This story is about..
 - [ ] Task 2
 - [ ] Task 3
 
-# Definition of done
+# Acceptance criteria
 
-As product owner...
+This user story is down when ..
