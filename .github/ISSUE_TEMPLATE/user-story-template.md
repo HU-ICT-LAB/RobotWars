@@ -11,6 +11,10 @@ assignees: ''
 
 This story is about..
 
+# Why do we need to do this?
+
+This story is need for..
+
 # Tasks for this user story 
 
 - [ ] Task 1 
@@ -19,4 +23,4 @@ This story is about..
 
 # Acceptance criteria
 
-This user story is down when ..
+This user story is done when ..
