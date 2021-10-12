@@ -1,1 +1,11 @@
+# api
 .idea/
+desktop.ini
+RobotwarsApi/__pycache__
+
+# react frontend
+/robotwarsreact/node_modules
+
+/robotwarsreact/npm-debug.log*
+/robotwarsreact/yarn-debug.log*
+/robotwarsreact/yarn-error.log*
