@@ -10,8 +10,12 @@ If you are a developer you need to run this command:
 pip install .[dev]
 ```
 
-## Start the api: 
-cd RobotWarsApi -> python3 api.py
+Start the api: 
+```bash
+cd RobotWarsApi && python3 api.py
+```
 
-## Start the react app
-cd robotwarsreact -> yarn start
+Start the react app
+```bash
+cd robotwarsreact && yarn install && yarn start
+```
