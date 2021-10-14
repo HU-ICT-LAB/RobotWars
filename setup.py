@@ -1,6 +1,8 @@
 import setuptools
 
 install_requires = [
+    "flask",
+    "flask-sqlalchemy"
 ]
 
 extras = {
