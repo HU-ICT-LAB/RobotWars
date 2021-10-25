@@ -1,4 +1,4 @@
-# RobotWars
+![banner](https://user-images.githubusercontent.com/60598779/138715577-8c875e6d-62c0-491b-90b8-e4181d99bf8c.png)
 
 ## Description
 This project is commissioned by Hogeschool Utrecht. This project is originated with the purpose to excite potential new students about the HBO-ICT study. The main goal is to automatically make RoboMaster s1's lasergame with eachother. 
