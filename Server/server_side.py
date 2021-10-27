@@ -3,10 +3,11 @@ import asyncio
 import websockets
 
 
-async def receive(websocket):
+async def receive(websocket, path):
     """
     Wait for a message to come in, print it and respond.
 
+    :param path: the path or ip that needs to be used
     :param websocket: the websocket that needs to be used.
     """
     message = await websocket.recv()
