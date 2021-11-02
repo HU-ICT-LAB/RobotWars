@@ -1,7 +1,7 @@
 import React from 'react';
 import "./menu_button.css"
 
-export const MenuButton = ( {text, adress} )=> {
+export default function MenuButton({text, adress}) {
 
   function action() {
     fetch('/api/v1/' + adress)
