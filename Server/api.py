@@ -5,7 +5,7 @@ from flask import Flask, jsonify
 app = Flask(__name__)
 
 
-@app.route("/api/v1/robots", methods=["GET"])
+@app.route("/api/v1/robot_ips", methods=["GET"])
 def get_robot_ips():
     """
     Get all robot ip's.
@@ -15,7 +15,7 @@ def get_robot_ips():
     return jsonify(["192.168.0.1", "192.168.0.2"])
 
 
-@app.route("/api/v1/start")
+@app.route("/api/v1/start_robots")
 def start_robots():
     """
     Start all robots.
