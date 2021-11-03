@@ -1,19 +1,13 @@
-"""Client side of websocket."""
-import asyncio
-import websockets
+"""Connects to the server and receives a file."""
+import socket
 
+s = socket.socket()
+s.connect(("localhost", 9999))
 
-uri = "ws://localhost:8765"
+file = open("incoming_file.txt", "wb")
+data = s.recv(1024)
+print("Received data: " + str(data))
+file.write(data)
 
-
-async def send():
-    """Send message to a websocket."""
-    async with websockets.connect(uri) as websocket:
-        while True:
-            out_message = input("Message: ")
-            await websocket.send(out_message)
-            in_message = await websocket.recv()
-            print(f"<<< {in_message}")
-
-
-asyncio.run(send())
+file.close()
+s.close()

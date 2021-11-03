@@ -2,9 +2,7 @@ import setuptools
 
 install_requires = [
     "flask",
-    "flask-sqlalchemy",
-    "asyncio",
-    "websockets"
+    "flask-sqlalchemy"
 ]
 
 extras = {

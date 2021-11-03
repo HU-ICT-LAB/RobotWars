@@ -1,24 +1,27 @@
-"""Server side of websockets."""
-import asyncio
-import websockets
+"""Server for handling requests."""
+import socketserver
 
 
-async def receive(websocket, path):
+class Server(socketserver.BaseRequestHandler):
     """
-    Wait for a message to come in, print it and respond.
+    The request handler class for the server.
 
-    :param path: the path or ip that needs to be used
-    :param websocket: the websocket that needs to be used.
+    It's instantiated once per connection to the server.
     """
-    message = await websocket.recv()
-    print(f"<<< {message}")
-    await websocket.send("Server: Received successfully")
+
+    def handle(self):
+        """
+        Handle an incoming request.
+
+        Sends a file to the connection.
+        """
+        print("connection opened with: " + str(self.client_address))
+        file = open("test", "rb")
+        opened_file = file.read(1024)
+        self.request.sendall(opened_file)
 
 
-async def main():
-    """Serve the websocket and make it run forever."""
-    async with websockets.serve(receive, "localhost", 8765):
-        await asyncio.Future()  # run forever
-
-
-asyncio.run(main())
+if __name__ == "__main__":
+    HOST, PORT = "localhost", 9999
+    with socketserver.TCPServer((HOST, PORT), Server) as server:
+        server.serve_forever()  # Keeps the server active
