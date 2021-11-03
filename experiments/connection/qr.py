@@ -11,8 +11,7 @@ import sys
 ssid = sys.argv[1]
 password = sys.argv[2]
 
-
-if __name__ == 'main':
+if __name__ == '__main__':
     helper = conn.ConnectionHelper()
     info = helper.build_qrcode_string(ssid=ssid, password=password)
     myqr.run(words=info, save_name=f"{ssid}.png")
