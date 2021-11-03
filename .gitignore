@@ -136,6 +136,7 @@ desktop.ini
 
 # react frontend
 /robotwarsreact/node_modules
+/node_modules
 
 /robotwarsreact/npm-debug.log*
 /robotwarsreact/yarn-debug.log*
