@@ -10,6 +10,7 @@ import sys
 # add the wifi and its password in the config of the qr
 ssid = sys.argv[1]
 password = sys.argv[2]
+print(f"ssid={ssid}, password={password}")
 
 if __name__ == '__main__':
     helper = conn.ConnectionHelper()
