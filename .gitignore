@@ -127,3 +127,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Jetbrains IDE
+.idea
+
+# api
+desktop.ini
+
+# react frontend
+/robotwarsreact/node_modules
+/node_modules
+
+/robotwarsreact/npm-debug.log*
+/robotwarsreact/yarn-debug.log*
+/robotwarsreact/yarn-error.log*
