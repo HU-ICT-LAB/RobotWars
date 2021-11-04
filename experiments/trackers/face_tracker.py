@@ -1,4 +1,4 @@
-from robomaster import robot, blaster
+from robomaster import robot
 import cv2
 import imutils
 
@@ -14,18 +14,15 @@ cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
 cv2.resizeWindow(window_name, 800, 800)
 
 # Connect/setup the robot
-ep_robot = robot.Robot()
-ep_robot.initialize(conn_type="sta", sn="159CGAC0050QS0")  # SN is the Serial Number of the specific robot
-ep_camera = ep_robot.camera
-ep_blaster = ep_robot.blaster
-ep_gimbal = ep_robot.gimbal
-ep_led = ep_robot.led
-ep_gimbal.recenter()
-ep_camera.start_video_stream(display=False, resolution='360p')
+srobot = robot.Robot()
+srobot.initialize(conn_type="sta", sn="159CGAC0050QS0")  # SN is the Serial Number of the specific robot
+
+srobot.gimbal.recenter()
+srobot.camera.start_video_stream(display=False, resolution='360p')
 
 while True:
     # Get the newest image from the camera and resize
-    img = ep_camera.read_cv2_image(strategy='newest')
+    img = srobot.camera.read_cv2_image(strategy='newest')
     img = imutils.resize(img, width=250)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -41,17 +38,17 @@ while True:
         dy = sum([y + h / 2 for _, y, _, h in bounding_boxes]) / len(bounding_boxes) - img.shape[0] / 2  # Average vertical offset to center
         gvx, gvy = dx * gimbal_speed, -dy * gimbal_speed  # Update gimbal velocities using the offsets to center
 
-        ep_led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
-        ep_blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
+        srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
+        # srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
     else:
         # Apply friction to the gimbal
         gvx *= 0.7
         gvy *= 0.7
 
-        ep_led.set_gimbal_led(r=255, g=0, b=0)  # Set the gimbal lights to red
+        srobot.led.set_gimbal_led(r=255, g=0, b=0)  # Set the gimbal lights to red
 
     # Update the physical gimbal velocity using the newly calculated
-    ep_gimbal.drive_speed(pitch_speed=gvy, yaw_speed=gvx)
+    srobot.gimbal.drive_speed(pitch_speed=gvy, yaw_speed=gvx)
 
     # Draw the image to the window
     cv2.imshow(window_name, img)
@@ -63,8 +60,8 @@ while True:
 
 # Set everything back to normal
 cv2.destroyAllWindows()
-ep_gimbal.drive_speed(pitch_speed=0, yaw_speed=0)
-ep_gimbal.recenter()
-ep_camera.stop_video_stream()
+srobot.gimbal.drive_speed(pitch_speed=0, yaw_speed=0)
+srobot.gimbal.recenter()
+srobot.camera.stop_video_stream()
 
-ep_robot.close()
+srobot.close()

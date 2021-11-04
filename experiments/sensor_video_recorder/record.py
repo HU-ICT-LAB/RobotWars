@@ -1,5 +1,4 @@
 import datetime
-import csv
 from PIL import Image
 
 from robomaster import robot
