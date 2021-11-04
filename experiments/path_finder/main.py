@@ -8,18 +8,20 @@ r: set robot location to cursor position
 """
 
 from typing import Tuple, List, Union
-from math import sin, cos, ceil
+from math import sin, cos, ceil, radians
 import threading
 import pygame
 import numpy as np
 import cv2
+from imposter_robomaster import robot
 
 space_size = np.array((10, 10))   # space dimensions in meters
 cell_size = 0.05  # pixel width and height in meters
 screen = pygame.display.set_mode((700, 700))
 max_step_size = 0.5     # maximum single step for pathfinding in meters
 n_nodes = 5000  # amount of nodes the tree should build
-distance_keeping = 0.2  # amount of distance to keep from obstacles in meters
+distance_keeping = 0.5  # amount of distance to keep from obstacles in meters
+robot_speed = 0.5   # in meters per second
 
 
 class Robot:
@@ -45,6 +47,7 @@ class Robot:
         self.chassis_yaw = chassis_yaw
         self.turret_yaw = turret_yaw
         self.color = color
+        self.last_reported_position = None
 
     def draw(self, surface: pygame.Surface):
         chassis_rotation_matrix = np.array([
@@ -120,6 +123,26 @@ def update_obstacle_surface():
     )
 
 
+def handle_position(position: Tuple[float, float, float]):
+    global robot0, tree, robot_speed
+    x, y, z = position
+    if robot0.last_reported_position is not None:
+        last_x, last_y = robot0.last_reported_position
+        old_x, old_y = robot0.location
+        robot0.location = old_x + x - last_x, old_y + y - last_y
+    robot0.last_reported_position = x, y
+    robot0.turret_yaw = radians(z)
+
+    drive_speed = (0, 0, 0)
+    if len(tree.all_nodes) > 0:
+        closest = tree.closest_node(tree.get_surrounding_nodes(robot0.location), robot0.location)
+        if closest.parent is not None:
+            if not path_blocked(robot0.location, closest.parent.location):
+                delta = np.subtract(closest.parent.location, robot0.location)
+                drive_speed = *(delta / np.linalg.norm(delta) * robot_speed), 0
+    physical_robot.chassis.drive_speed(*drive_speed)
+
+
 pygame.init()
 clock = pygame.time.Clock()
 font = pygame.font.Font(pygame.font.get_default_font(), 15)
@@ -137,6 +160,12 @@ goal = None
 tree = Tree()
 tree_building_thread = None
 tree_building_terminate = False
+
+physical_robot = robot.Robot()
+physical_robot.initialize(conn_type="sta")
+physical_robot.set_robot_mode(robot.GIMBAL_LEAD)
+physical_robot.gimbal.recenter()
+physical_robot.chassis.sub_position(20, handle_position)
 
 
 def path_blocked(point1: Tuple[float, float], point2: Tuple[float, float]) -> bool:
@@ -292,6 +321,8 @@ def main():
     if tree_building_thread is not None:
         tree_building_thread.join()
     pygame.quit()
+    physical_robot.chassis.unsub_position()
+    physical_robot.close()
 
 
 if __name__ == '__main__':
