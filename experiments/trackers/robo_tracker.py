@@ -55,6 +55,7 @@ result = srobot.vision.sub_detect_info(name="robot", callback=on_detect_person)
 time.sleep(3)
 img_h = 250
 img_w = 250
+mid_map = (img_w//2, img_h//2)
 while True:
     # Get the newest image from the camera and resize
     img = srobot.camera.read_cv2_image(strategy='newest')
@@ -65,20 +66,22 @@ while True:
     for i in range(0, len(bounding_boxes)):
         cv2.rectangle(img, bounding_boxes[i].pt1, bounding_boxes[i].pt2, (255, 0, 0))
         test = []
+    cv2.rectangle(img, (40, 40), (50, 50), (0, 255, 0))
 
     if len(bounding_boxes) > 0:
-        gvx, gvy = 0, 0
-        if bounding_boxes[0].center[0] > 150:
+
+        # x speed
+        if bounding_boxes[0].center[0] > mid_map[0]:
             gvx = 10
-        elif bounding_boxes[0].center[0] < -150:
+        elif bounding_boxes[0].center[0] < mid_map[0]:
             gvx = -10
-
-
-        if bounding_boxes[0].center[1] > 150:
+        # y speed
+        if bounding_boxes[0].center[1] > mid_map[1]:
             gvy = -10
-        elif bounding_boxes[0].center[1] < -150:
+        elif bounding_boxes[0].center[1] < mid_map[1]:
             gvy = 10
-
+        srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
+        srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
 
     # if len(bounding_boxes) > 0:
     #     dx = sum([x + w / 2 for x, _, w, _ in bounding_boxes]) / len(bounding_boxes) - img.shape[
@@ -86,8 +89,8 @@ while True:
     #     dy = sum([y + h / 2 for _, y, _, h in bounding_boxes]) / len(bounding_boxes) - img.shape[0] / 2  # Average vertical offset to center
     #     gvx, gvy = dx * gimbal_speed, -dy * gimbal_speed  # Update gimbal velocities using the offsets to center
 
-        srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
-        # srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
+    #    srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
+    #    srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
     else:
         # Apply friction to the gimbal
         gvx *= 0.7
