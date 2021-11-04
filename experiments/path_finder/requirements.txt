@@ -1,3 +1,4 @@
 pygame==2.0.3
 numpy==1.21.3
 opencv-python==4.5.4.58
+robomaster==0.1.1.65
