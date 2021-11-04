@@ -1,3 +1,4 @@
+"""WARNING IF BLASTER IS ON RUN AT YOUR OWN RISK!! This program will make the robot aim at the faces."""
 from robomaster import robot
 import cv2
 import imutils

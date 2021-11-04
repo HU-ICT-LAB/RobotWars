@@ -1,3 +1,4 @@
+"""Creates a qr code to let the robot connect with the set wifi in the parameters."""
 import time
 from robomaster import conn
 from MyQR import myqr

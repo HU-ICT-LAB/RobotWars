@@ -1,9 +1,10 @@
+"""Checks the battery percentage and recenter the robot for testing."""
 import time
 from robomaster import robot
 
 
 def sub_info_handler(batter_info):
-    """Print the battery percentage"""
+    """Print the battery percentage."""
     print("Battery: {0}%.".format(batter_info))
 
 
