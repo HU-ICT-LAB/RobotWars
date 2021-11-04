@@ -36,7 +36,7 @@ class Chassis:
         self.position += self._drive_speed * (now - self.last_update)
         self.last_update = now
 
-    def sub_position(self, freq, callback):
+    def sub_position(self, freq, callback, cs):
         self.pos_sub_terminate = False
 
         def pos_sub():
@@ -68,6 +68,8 @@ class Gimbal:
 
     def recenter(self):
         pass
+
+    # def sub_angle(self, ):
 
 
 class Camera:

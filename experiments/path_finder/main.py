@@ -13,15 +13,15 @@ import threading
 import pygame
 import numpy as np
 import cv2
-from imposter_robomaster import robot
+from robomaster import robot
 
 space_size = np.array((10, 10))   # space dimensions in meters
 cell_size = 0.05  # pixel width and height in meters
 screen = pygame.display.set_mode((700, 700))
 max_step_size = 0.5     # maximum single step for pathfinding in meters
 n_nodes = 5000  # amount of nodes the tree should build
-distance_keeping = 0.5  # amount of distance to keep from obstacles in meters
-robot_speed = 0.5   # in meters per second
+distance_keeping = 0.3  # amount of distance to keep from obstacles in meters
+robot_speed = 0.6   # in meters per second
 
 
 class Robot:
@@ -32,8 +32,8 @@ class Robot:
         [-0.12, 0.16],
     ])
     turret_polygon = np.array([
-        [-0.03, -0.15],
-        [0.03, -0.15],
+        [-0.03, -0.3],
+        [0.03, -0.3],
         [0.03, 0.03],
         [-0.03, 0.03],
     ])
@@ -47,7 +47,7 @@ class Robot:
         self.chassis_yaw = chassis_yaw
         self.turret_yaw = turret_yaw
         self.color = color
-        self.last_reported_position = None
+        self.virtual_offset = space_size / 2
 
     def draw(self, surface: pygame.Surface):
         chassis_rotation_matrix = np.array([
@@ -55,8 +55,8 @@ class Robot:
             [sin(self.chassis_yaw), cos(self.chassis_yaw)],
         ])
         turret_rotation_matrix = np.array([
-            [cos(self.chassis_yaw + self.turret_yaw), -sin(self.chassis_yaw + self.turret_yaw)],
-            [sin(self.chassis_yaw + self.turret_yaw), cos(self.chassis_yaw + self.turret_yaw)],
+            [cos(self.turret_yaw), -sin(self.turret_yaw)],
+            [sin(self.turret_yaw), cos(self.turret_yaw)],
         ])
         transformed_chassis_polygon = (self.chassis_polygon @ chassis_rotation_matrix + self.location) * screen_factor
         pygame.draw.lines(surface, self.color, True, transformed_chassis_polygon, width=2)
@@ -126,28 +126,33 @@ def update_obstacle_surface():
 def handle_position(position: Tuple[float, float, float]):
     global robot0, tree, robot_speed
     x, y, z = position
-    if robot0.last_reported_position is not None:
-        last_x, last_y = robot0.last_reported_position
-        old_x, old_y = robot0.location
-        robot0.location = old_x + x - last_x, old_y + y - last_y
-    robot0.last_reported_position = x, y
-    robot0.turret_yaw = radians(z)
+    robot0.location = np.array([y, -x]) + robot0.virtual_offset
 
     drive_speed = (0, 0, 0)
-    if len(tree.all_nodes) > 0:
+    if len(tree.all_nodes) > 0 and follow:
         closest = tree.closest_node(tree.get_surrounding_nodes(robot0.location), robot0.location)
         if closest.parent is not None:
-            if not path_blocked(robot0.location, closest.parent.location):
+            if not path_blocked(robot0.location, closest.parent.location) or \
+                    np.linalg.norm(np.subtract(robot0.location, closest.location)) < 0.5:
                 delta = np.subtract(closest.parent.location, robot0.location)
-                drive_speed = *(delta / np.linalg.norm(delta) * robot_speed), 0
+                speed_normalized = delta / np.linalg.norm(delta) * robot_speed
+                rotation_matrix = np.array([
+                    [cos(-robot0.chassis_yaw), -sin(-robot0.chassis_yaw)],
+                    [sin(-robot0.chassis_yaw), cos(-robot0.chassis_yaw)],
+                ])
+                rotated = speed_normalized @ rotation_matrix
+                drive_speed = -rotated[1], rotated[0], 0
     physical_robot.chassis.drive_speed(*drive_speed)
 
 
-pygame.init()
-clock = pygame.time.Clock()
-font = pygame.font.Font(pygame.font.get_default_font(), 15)
-pygame.mouse.set_visible(False)
-drivable_mask = np.zeros((space_size / cell_size).astype(int))
+def handle_angle(angle):
+    global robot0
+    pitch_angle, yaw_angle, pitch_ground_angle, yaw_ground_angle = angle
+    robot0.turret_yaw = -radians(yaw_ground_angle)
+    robot0.chassis_yaw = -radians(yaw_ground_angle-yaw_angle)
+
+
+drivable_mask = np.ones((space_size / cell_size).astype(int))
 drivable_surface: pygame.Surface
 erode_kernel = np.ones([ceil(distance_keeping / cell_size)]*2)
 drivable_eroded = cv2.erode(drivable_mask, erode_kernel, iterations=1)
@@ -160,12 +165,22 @@ goal = None
 tree = Tree()
 tree_building_thread = None
 tree_building_terminate = False
+follow = False
+
 
 physical_robot = robot.Robot()
 physical_robot.initialize(conn_type="sta")
-physical_robot.set_robot_mode(robot.GIMBAL_LEAD)
+print("connected")
+physical_robot.set_robot_mode(robot.CHASSIS_LEAD)
 physical_robot.gimbal.recenter()
-physical_robot.chassis.sub_position(20, handle_position)
+physical_robot.chassis.sub_position(freq=20, callback=handle_position, cs=0)
+physical_robot.gimbal.sub_angle(freq=20, callback=handle_angle)
+
+
+pygame.init()
+clock = pygame.time.Clock()
+font = pygame.font.Font(pygame.font.get_default_font(), 15)
+pygame.mouse.set_visible(False)
 
 
 def path_blocked(point1: Tuple[float, float], point2: Tuple[float, float]) -> bool:
@@ -259,7 +274,7 @@ def reset_tree():
 
 
 def main():
-    global clock, drivable_mask, drivable_surface, robot0, brush_size, goal, tree_building_thread, tree_building_terminate, drivable_eroded
+    global clock, drivable_mask, drivable_surface, robot0, brush_size, goal, tree_building_thread, tree_building_terminate, drivable_eroded, follow
 
     running = True
     while running:
@@ -272,6 +287,8 @@ def main():
                 if event.key == pygame.K_g:
                     goal = (np.array(pygame.mouse.get_pos()) + screen_brush_size/2) / screen_factor
                     reset_tree()
+                if event.key == pygame.K_f:
+                    follow = not follow
         keys = pygame.key.get_pressed()
         if keys[pygame.K_r]:
             robot0.location = (np.array(pygame.mouse.get_pos()) + screen_brush_size/2) / screen_factor
@@ -305,8 +322,8 @@ def main():
                 points.append(np.array(node.location) * screen_factor)
             if len(points) >= 2:
                 pygame.draw.lines(screen, (0, 0, 255), False, points, width=2)
-            for node in tree.all_nodes:
-                pygame.draw.circle(screen, (255, 100, 0), node.location * screen_factor, 2)
+            # for node in tree.all_nodes:
+            #     pygame.draw.circle(screen, (255, 100, 0), node.location * screen_factor, 2)
         # draw n_nodes
         screen.blit(font.render(f"N_nodes: {len(tree.all_nodes)}", False, [128]*3), (10, 10))
         # draw cursor location
