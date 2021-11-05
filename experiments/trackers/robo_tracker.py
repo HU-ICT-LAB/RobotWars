@@ -1,115 +1,71 @@
 from robomaster import robot, blaster
 import cv2
 import imutils
-import time
+import keyboard
 
-gimbal_speed = 1.5  # Speed to move the gimbal by
-gvx, gvy = 0, 0  # Starting gimbal velocities
+gimbal_speed = 170
+gvx, gvy = 0, 0
+img_w, img_h = 280, 280
 bounding_boxes = []
+mid_img = [img_w//2, img_h//2]
+mid_bounding_box= ((mid_img[0]-10, mid_img[1]-10), (mid_img[0]+10, mid_img[1]+10))
 
 
-class RobotInfo:
-
-    def __init__(self, x, y, w, h):
-        self._x = x
-        self._y = y
-        self._w = w
-        self._h = h
-
-    @property
-    def pt1(self):
-        return int((self._x - self._w / 2) * img_w), int((self._y - self._h / 2) * img_h)
-
-    @property
-    def pt2(self):
-        return int((self._x + self._w / 2) * img_w), int((self._y + self._h / 2) * img_h)
-
-    @property
-    def center(self):
-        return int(self._x * img_w), int(self._y * img_h)
-
-
-def on_detect_person(person_info):
-    number = len(person_info)
+def detect_robot(robot_info):
     bounding_boxes.clear()
-    for i in range(0, number):
-        x, y, w, h = person_info[i]
-        bounding_boxes.append(RobotInfo(x, y, w, h))
-        print("robot: x:{0}, y:{1}, w:{2}, h:{3}".format(x, y, w, h))
+    for x, y, w, h in robot_info:
+        bounding_boxes.append((x, y, w, h))
 
 
-# Setup the window to draw to
-window_name = 'Robot'
+# Create GUI
+window_name = "Robot"
 cv2.namedWindow(window_name, cv2.WINDOW_GUI_EXPANDED)
-cv2.resizeWindow(window_name, 800, 800)
+cv2.resizeWindow(window_name, img_w, img_h)
 
-# Connect/setup the robot
+# Initialize robot in starting postion
 srobot = robot.Robot()
-srobot.initialize(conn_type="sta", sn="159CGAC0050QS0")  # SN is the Serial Number of the specific robot
-
+srobot.initialize(conn_type="sta")
 srobot.gimbal.recenter().wait_for_completed()
-# srobot.gimbal.move(pitch=-20, yaw=-10).wait_for_completed()
 
-srobot.camera.start_video_stream(display=False, resolution='360p')
-result = srobot.vision.sub_detect_info(name="robot", callback=on_detect_person)
-time.sleep(3)
-img_h = 250
-img_w = 250
-mid_map = (img_w//2, img_h//2)
+# Start camera and detection
+srobot.camera.start_video_stream(display=False, resolution="360p")
+srobot.vision.sub_detect_info(name="robot", callback=detect_robot)
+
+
 while True:
-    # Get the newest image from the camera and resize
-    img = srobot.camera.read_cv2_image(strategy='newest')
-    img = imutils.resize(img, width=img_w)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Draw the bounding_boxes
-    for i in range(0, len(bounding_boxes)):
-        cv2.rectangle(img, bounding_boxes[i].pt1, bounding_boxes[i].pt2, (255, 0, 0))
-        test = []
-    cv2.rectangle(img, (40, 40), (50, 50), (0, 255, 0))
+    img = srobot.camera.read_cv2_image(strategy="newest")
+    img = imutils.resize(img, width=img_w, height=img_h)
 
+    for bounding_box in bounding_boxes:
+        x, y, w, h = bounding_box
+        cv2.rectangle(img, (int((x - w / 2) * img.shape[1]),
+                            int((y - h / 2) * img.shape[0])),
+                           (int((x + w / 2) * img.shape[1]),
+                            int((y + h / 2) * img.shape[0])),
+                             (255, 0, 0), 2)
+    # set gimbal speed
     if len(bounding_boxes) > 0:
-
-        # x speed
-        if bounding_boxes[0].center[0] > mid_map[0]:
-            gvx = 10
-        elif bounding_boxes[0].center[0] < mid_map[0]:
-            gvx = -10
-        # y speed
-        if bounding_boxes[0].center[1] > mid_map[1]:
-            gvy = -10
-        elif bounding_boxes[0].center[1] < mid_map[1]:
-            gvy = 10
-        srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
-        srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
-
-    # if len(bounding_boxes) > 0:
-    #     dx = sum([x + w / 2 for x, _, w, _ in bounding_boxes]) / len(bounding_boxes) - img.shape[
-    #         1] / 2  # Average horizontal offset to center
-    #     dy = sum([y + h / 2 for _, y, _, h in bounding_boxes]) / len(bounding_boxes) - img.shape[0] / 2  # Average vertical offset to center
-    #     gvx, gvy = dx * gimbal_speed, -dy * gimbal_speed  # Update gimbal velocities using the offsets to center
-
-    #    srobot.led.set_gimbal_led(r=0, g=255, b=0)  # Set the gimbal lights to green
-    #    srobot.blaster.fire(fire_type=blaster.WATER_FIRE, times=1)  # Fire the blaster
+        x, y, w, h = bounding_boxes[0]
+        dx = x - 0.5
+        dy = y - 0.5
+        print(dx, dy)
+        gvx, gvy = dx * gimbal_speed, -dy * gimbal_speed
+        srobot.led.set_gimbal_led(r=0, g=255, b=0)
+        srobot.blaster.fire(fire_type=blaster.INFRARED_FIRE)
     else:
-        # Apply friction to the gimbal
         gvx *= 0.7
         gvy *= 0.7
 
-        srobot.led.set_gimbal_led(r=255, g=0, b=0)  # Set the gimbal lights to red
+        srobot.led.set_gimbal_led(r=255, g=0, b=0)
+        # Shooting/ detecting laser
+    srobot.gimbal.drive_speed(yaw_speed=gvx, pitch_speed=gvy)
 
-    # Update the physical gimbal velocity using the newly calculated
-    srobot.gimbal.drive_speed(pitch_speed=gvy, yaw_speed=gvx)
-
-    # Draw the image to the window
     cv2.imshow(window_name, img)
     cv2.waitKey(1)
 
-    # Stop the loop when the [X] window button is pressed
-    if cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) < 1:
+    if keyboard.is_pressed("x"):
         break
-
-# Set everything back to normal
 cv2.destroyAllWindows()
 srobot.gimbal.drive_speed(pitch_speed=0, yaw_speed=0)
 srobot.gimbal.recenter()
