@@ -1,3 +1,4 @@
+"""Track an other robomaster with the build in robomaster recognizer."""
 from robomaster import robot, blaster
 import cv2
 import imutils
@@ -7,12 +8,12 @@ gimbal_speed = 170
 gvx, gvy = 0, 0
 img_w, img_h = 280, 280
 bounding_boxes = []
-mid_img = [img_w//2, img_h//2]
-mid_bounding_box= ((mid_img[0]-10, mid_img[1]-10), (mid_img[0]+10, mid_img[1]+10))
 
 
 def detect_robot(robot_info):
+    """Clear the bounding_boxes list and safes new bounding boxes."""
     bounding_boxes.clear()
+    # (x, y) is the middle of the bounding box, w is the width of the bounding box and h is the height of the bounding
     for x, y, w, h in robot_info:
         bounding_boxes.append((x, y, w, h))
 
@@ -31,7 +32,6 @@ srobot.gimbal.recenter().wait_for_completed()
 srobot.camera.start_video_stream(display=False, resolution="360p")
 srobot.vision.sub_detect_info(name="robot", callback=detect_robot)
 
-
 while True:
 
     img = srobot.camera.read_cv2_image(strategy="newest")
@@ -41,9 +41,9 @@ while True:
         x, y, w, h = bounding_box
         cv2.rectangle(img, (int((x - w / 2) * img.shape[1]),
                             int((y - h / 2) * img.shape[0])),
-                           (int((x + w / 2) * img.shape[1]),
-                            int((y + h / 2) * img.shape[0])),
-                             (255, 0, 0), 2)
+                      (int((x + w / 2) * img.shape[1]),
+                       int((y + h / 2) * img.shape[0])),
+                      (255, 0, 0), 2)
     # set gimbal speed
     if len(bounding_boxes) > 0:
         x, y, w, h = bounding_boxes[0]
