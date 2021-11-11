@@ -2,7 +2,8 @@ import setuptools
 
 install_requires = [
     "flask",
-    "flask-sqlalchemy"
+    "flask-sqlalchemy",
+    "firebase_admin"
 ]
 
 extras = {
