@@ -3,7 +3,7 @@ import setuptools
 install_requires = [
     "flask",
     "flask-sqlalchemy",
-    "firebase_admin"
+    "mysql.connector"
 ]
 
 extras = {
