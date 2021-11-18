@@ -10,7 +10,6 @@ def connect():
                                    user=os.environ.get("DB_USER"),
                                    password=os.environ.get("DB_PASSWORD"),
                                    database=os.environ.get("DB_NAME"))
-    # These actually need to be github secrets.
 
 
 def add_robot(name, modifications):
@@ -34,6 +33,18 @@ def add_policy(policy_description, policy_path):
     perform_query("INSERT INTO policy (description, file) VALUES(%s,%s)", (policy_description, file))
 
 
+def retrieve_policy(policy_id):
+    """
+    Retrieve policy with given id.
+
+    :param policy_id: The id of the policy that needs to be retrieved.
+    """
+    cursor = db.cursor()
+    cursor.execute(f"SELECT file FROM robotwars.policy WHERE policy_id = {policy_id}")
+    result = cursor.fetchone()[0]
+    convert_binary_to_file(result, "py")
+
+
 def perform_query(query, values):
     """
     Perform any query.
@@ -55,6 +66,17 @@ def convert_file_to_binary(path):
     with open(path, "rb") as file:
         binary_data = file.read()
     return binary_data
+
+
+def convert_binary_to_file(binary_data, filetype):
+    """
+    Convert file to binary data and save the file.
+
+    :param binary_data: The binary data of the file.
+    :param filetype: The type of the file.
+    """
+    with open(f"policy.{filetype}", "wb") as file:
+        file.write(binary_data)
 
 
 if __name__ == "__main__":
