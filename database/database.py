@@ -1,13 +1,15 @@
 """Connection to amazon web services relational database and some example functions."""
+import os
+
 import mysql.connector
 
 
 def connect():
     """Connect to the database."""
-    return mysql.connector.connect(host="robotwars.cviyowqzhluv.us-east-1.rds.amazonaws.com",
-                                   user="RobotWars",
-                                   password="ai_sd_ti_bim",
-                                   database="robotwars")
+    return mysql.connector.connect(host=os.environ.get("DB_URL"),
+                                   user=os.environ.get("DB_USER"),
+                                   password=os.environ.get("DB_PASSWORD"),
+                                   database=os.environ.get("DB_NAME"))
     # These actually need to be github secrets.
 
 
