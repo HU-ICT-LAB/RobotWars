@@ -9,13 +9,6 @@ import keyboard
 from PIL import Image
 import base64
 from pathlib import Path
-relative_yaw = 0
-x_speed = []
-y_speed = []
-z_speed = []
-pitch_speed = []
-yaw_speed = []
-fire_blaster = []
 
 
 
@@ -38,9 +31,8 @@ robot.chassis.sub_imu(freq=20, callback=sensor_logger.log_imu)
 robot.camera.start_video_stream(display=True)
 
 
-speed = 0.5 # todo
+speed = 0.5 # todo remove if you remove keyboard
 done = False
-sensor_logger.start = True
 while not done:
     # velocity = np.array([0., 0., 0.])
     # if keyboard.is_pressed('w'):
@@ -78,7 +70,7 @@ while not done:
         # Gimbal and Chassis speed
         x = -joystick.get_axis(1)*2 if abs(joystick.get_axis(1)) > 0.01 else 0    # Drift prevention measure
         y = joystick.get_axis(0)*2 if abs(joystick.get_axis(0)) > 0.01 else 0
-        z = relative_yaw*5
+        z = sensor_logger.relative_yaw*5
         pitch = -joystick.get_axis(4)*100 if abs(joystick.get_axis(4)) > 0.01 else 0
         yaw = joystick.get_axis(3)*300 if abs(joystick.get_axis(3)) > 0.01 else 0
         # Gimbal and Chassis control
@@ -98,10 +90,11 @@ while not done:
             sensor_logger.log_blaster_fire(False)
         time.sleep(0.05)
         # Image save
-        np_img = robot.camera.read_cv2_image(strategy='newest')
+        np_img = robot.camera.read_cv2_image(strategy='newest') # TODO convert img to blob png
         im = Image.fromarray(np_img)
         im_path = str(Path(r"video_frames") / f"{datetime.datetime.now().strftime('%m_%d_%Y_%H_%M_%S_%f3')}") + ".png"
         im.save(im_path)
+        sensor_logger.create_row()
     except KeyboardInterrupt:
         done = True
 
