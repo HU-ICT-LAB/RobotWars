@@ -1,3 +1,5 @@
+from .SensorLogger import SensorLogger
+
 from robomaster import robot as robomaster_robot
 from robomaster import blaster
 import pygame
@@ -15,47 +17,6 @@ pitch_speed = []
 yaw_speed = []
 fire_blaster = []
 
-class SensorLogger:
-    """This class records the data of the robots subscribe functions and save it to a csv."""
-
-    def __init__(self, sensor_title: str, extra_sensor_data=None):
-        self.title = sensor_title
-        self.filename = f"{sensor_title}.csv"
-        self.sensor_log = []
-        self.extra_sensor_log = []
-        self.extern_sensor = extra_sensor_data
-
-    def log(self, sensor_input: tuple):
-        """Add the incoming data to the log together with the datetime."""
-        self.sensor_log.append([datetime.datetime.now(), *sensor_input])
-
-    def log_gimbal(self, sensor_input: tuple):
-        """Add the incoming data to the gimbal log together with the datetime."""
-        global relative_yaw
-        relative_yaw = sensor_input[1]
-        self.sensor_log.append([datetime.datetime.now(), sensor_input[0], sensor_input[1]])
-
-    def combine_pos_data(self):
-        """
-        This function is to replace the z position that is not working with the calculated z through
-        the gimbal.
-        """
-        if self.extern_sensor is not None:
-            self.extra_sensor_log = [self.extern_sensor.sensor_log[i][3] - self.extern_sensor.sensor_log[i][1]
-                                     for i in range(len(self.extern_sensor.sensor_log))]
-        if len(self.sensor_log) > len(self.extra_sensor_log):
-            l = len(self.extra_sensor_log)
-        else:
-            l = len(self.sensor_log)
-        self.sensor_log = [self.sensor_log[i][:2] + self.extra_sensor_log[i] for i in range(l)] # todo mis niet zo effiecent
-
-    def save(self):
-        """Save the log to a csv file."""
-        if self.extra_sensor_log:   # Checks if there is the extra data for the position.
-            self.combine_pos_data()
-        with open(self.filename, 'a') as file:
-            for row in self.sensor_log:
-                file.write(f"{';'.join(map(str, row))}\n")
 
 
 # This code has been created and tested with a PS4 controller, but should in theory work with any controller recognized by your OS
@@ -68,22 +29,18 @@ robot.set_robot_mode(robomaster_robot.GIMBAL_LEAD)
 robot.gimbal.recenter()
 
 # Generate loggers
-gimbal_logger = SensorLogger("gimbal_logger")
-position_logger = SensorLogger("position_logger", gimbal_logger)
-imu_logger = SensorLogger("imu_logger")
-chassis_speed_logger = SensorLogger("chassis_speed_logger")
-gimbal_speed_logger = SensorLogger("gimbal_speed_logger")
-blaster_fire_logger = SensorLogger("blaster_fire_logger")
+sensor_logger = SensorLogger("experience1")
 
 # Subscribe to sensors of the RoboMaster
-robot.gimbal.sub_angle(freq=20, callback=gimbal_logger.log_gimbal)
-robot.chassis.sub_position(freq=20, callback=position_logger.log)
-robot.chassis.sub_imu(freq=20, callback=imu_logger.log)
+robot.chassis.sub_position(freq=20, callback=sensor_logger.log_chassis)
+robot.gimbal.sub_angle(freq=20, callback=sensor_logger.log_gimbal)
+robot.chassis.sub_imu(freq=20, callback=sensor_logger.log_imu)
 robot.camera.start_video_stream(display=True)
 
 
 speed = 0.5 # todo
 done = False
+sensor_logger.start = True
 while not done:
     # velocity = np.array([0., 0., 0.])
     # if keyboard.is_pressed('w'):
@@ -128,17 +85,17 @@ while not done:
         robot.gimbal.drive_speed(pitch, yaw)
         robot.chassis.drive_speed(x=x, y=y, z=z)
         # Append current speed measurement to the corresponding list
-        chassis_speed_logger.log((x, y, z))
-        gimbal_speed_logger.log((pitch, yaw))
+        sensor_logger.log_chassis_speed((x, y, z))
+        sensor_logger.log_gimbal_speed((pitch, yaw))
         # Checks blaster fire
         if joystick.get_button(7):
             robot.blaster.fire(blaster.WATER_FIRE)
-            blaster_fire_logger.log((True,))
+            sensor_logger.log_blaster_fire(True)
         elif joystick.get_button(6):
             robot.blaster.fire(blaster.INFRARED_FIRE)
-            blaster_fire_logger.log((True,))
+            sensor_logger.log_blaster_fire(True)
         else:
-            blaster_fire_logger.log((False,))
+            sensor_logger.log_blaster_fire(False)
         time.sleep(0.05)
         # Image save
         np_img = robot.camera.read_cv2_image(strategy='newest')
@@ -155,11 +112,6 @@ robot.chassis.unsub_imu()
 robot.gimbal.unsub_angle()
 print('unsubscribed')
 print('saving logs')
-gimbal_logger.save()
-position_logger.save()
-imu_logger.save()
-chassis_speed_logger.save()
-gimbal_speed_logger.save()
-blaster_fire_logger.save()
+sensor_logger.save()
 print('saved')
 robot.close()
