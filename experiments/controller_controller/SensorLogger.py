@@ -1,6 +1,6 @@
 """This program consists of the class that logs and saves the sensor data for experience data."""
 import datetime
-
+from database import database
 
 class SensorLogger:
     """This class creates the logs the sensor data and either saves the data."""
@@ -55,7 +55,7 @@ class SensorLogger:
                                 + self.gimbal_speed_log + self.imu_log + self.blaster_log, self.image_log])
 
     def log_img(self, img):
-        """Log the img in bitformat."""
+        """Log the img in bit-format."""
         self.image_log = [img]
 
     def save(self):
@@ -70,6 +70,12 @@ class SensorLogger:
             for row in self.sensor_log:
                 file.write(f"{';'.join(map(str, row))}\n")
 
+    # TODO Add connection between ACTIONPOINTS
+
     def send_to_db(self):  # TODO
-        """Send the extrected experience to the database."""
-        pass
+        """Send the extracted experience to the database."""
+        db = database.connect()
+        query = "INSERT into "
+        values = self.sensor_log
+        db.cursor().execute(query, values)
+        db.commit()
