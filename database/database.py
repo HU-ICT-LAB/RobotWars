@@ -19,7 +19,7 @@ def add_robot(name, modifications):
     :param name: Name of the robot.
     :param modifications: Short description of the robot it's modifications.
     """
-    perform_query("INSERT INTO robot (name, description_of_modifications) VALUES (%s,%s)", (name, modifications))
+    perform_query(db, "INSERT INTO robot (name, description_of_modifications) VALUES (%s,%s)", (name, modifications))
 
 
 def add_policy(policy_description, policy_path):
@@ -30,7 +30,7 @@ def add_policy(policy_description, policy_path):
     :param policy_path: The path of where the policy file is stored.
     """
     file = convert_file_to_binary(policy_path)
-    perform_query("INSERT INTO policy (description, file) VALUES(%s,%s)", (policy_description, file))
+    perform_query(db, "INSERT INTO policy (description, file) VALUES(%s,%s)", (policy_description, file))
 
 
 def retrieve_policy(policy_id):
@@ -45,15 +45,17 @@ def retrieve_policy(policy_id):
     convert_binary_to_file(result, "py")
 
 
-def perform_query(query, values):
+def perform_query(db, query, values):
     """
     Perform any query.
 
     :param query: The query that needs to be executed.
     :param values: The values for the query.
     """
-    db.cursor().execute(query, values)
+    cursor = db.cursor()
+    cursor.execute(query, values)
     db.commit()
+    return cursor.fetchall()
 
 
 def convert_file_to_binary(path):
