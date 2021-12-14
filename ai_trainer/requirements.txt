@@ -1,4 +1,7 @@
-gym
-opencv-python
-numpy
+opencv-python==3.4.16.59
+numpy==1.21.4
+pettingzoo[butterfly]>=1.13.1
 stable-baselines3
+gym
+supersuit==3.3.2
+shapely
