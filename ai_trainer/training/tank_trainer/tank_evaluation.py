@@ -1,10 +1,12 @@
 import numpy as np
 from cv2 import cv2
 from stable_baselines3 import PPO
+import supersuit as ss
 
 from ai_trainer.envs.tank_simulation.environment import TankEnv
 
 env = TankEnv()
+env = ss.frame_stack_v1(env, 3)
 model = PPO.load("../../trained_policies/tank_policy.zip", env=env)
 
 window_name = "Tank Environment"
