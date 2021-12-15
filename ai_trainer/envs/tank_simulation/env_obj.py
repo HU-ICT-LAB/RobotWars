@@ -1,7 +1,9 @@
-from typing import Tuple
+from typing import Tuple, Set, Optional
 from math import atan2
 from cv2 import cv2
 import numpy as np
+from shapely.geometry import Polygon
+from shapely.strtree import STRtree
 
 import ai_trainer.envs.tank_simulation.environment as environment
 from ai_trainer.envs.tank_simulation.utils import create_2d_rotation_matrix
@@ -47,3 +49,11 @@ class EnvObj:
             [-rect_width/2, rect_height/2],
         ])
         return base_polygon @ create_2d_rotation_matrix(rect_z) + self.get_location()
+
+    def colliding(self, tank_env: 'environment.TankEnv', ignore: Optional[Set['EnvObj']] = None) -> bool:
+        if ignore is None:
+            ignore = {self}
+        else:
+            ignore.add(self)
+        tree = STRtree([Polygon(o.collision_poly) for o in tank_env.environment_objects if o not in ignore])
+        return len(tree.query(Polygon(self.collision_poly))) > 0

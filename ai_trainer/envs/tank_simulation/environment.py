@@ -17,10 +17,11 @@ class TankEnv(gym.Env):
 
     def __init__(self):
         self.step_size = 1 / 20  # 20 environment steps represent 1 second
-        self.game_session_length = 60.  # length of one game/episode in seconds
+        self.game_session_length = 30.  # length of one game/episode in seconds
         self.canvas_size = 700, 700
         self.arena_size = 5., 5.  # meters
         self.n_lidar_rays = 20  # number of rays to simulate lidar
+        self.n_tanks = 3
         self.max_drive_speeds = 2., 2., radians(300), radians(20), radians(20)  # chassis-x,y,z, gimbal-pitch,yaw
         # x,y,z chassis. pitch,yaw gimbal. fire
         self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
@@ -28,24 +29,28 @@ class TankEnv(gym.Env):
 
         self.environment_objects: List[EnvObj] = []
 
+    @property
+    def tanks(self) -> List[Tank]:
+        return [x for x in self.environment_objects if isinstance(x, Tank)]  # noqa
+
     def reset(self):
         self.environment_objects = [
-            Tank(np.array([1., 3., 0.]), np.array([0., pi/2])),
-            Tank(np.array([2., 3., 0.]), np.array([1, 1.])),
-            Tank(np.array([3., 3., 0.]), np.array([1, 1.])),
-            Tank(np.array([4., 3., 0.]), np.array([1, 1.])),
             EnvObj((1., 1.), np.array([2., 2., radians(40)])),
             EnvObj((.4, .6), np.array([3.8, 3.7, radians(10)])),
         ]
+        while len(self.tanks) < self.n_tanks:
+            tank = Tank(np.random.rand(3) * (*self.arena_size, 2*pi), np.random.rand(2) * (2*pi))
+            if not tank.colliding(self):
+                self.environment_objects.append(tank)
+
         self.time = 0.
-        tanks: List[Tank] = list(filter(lambda x: isinstance(x, Tank), self.environment_objects))  # noqa
-        return tanks[0].observe(self)
+        return self.tanks[0].observe(self)
 
     def render(self, mode="human"):
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
-            if environment_object is self.environment_objects[0]:
+            if environment_object is self.tanks[0]:
                 environment_object: Tank
                 canvas = environment_object.render(canvas, self, color=(1, 0, 0))
             else:
@@ -53,7 +58,7 @@ class TankEnv(gym.Env):
         return canvas
 
     def step(self, action):
-        tanks: List[Tank] = list(filter(lambda x: isinstance(x, Tank), self.environment_objects))  # noqa
+        tanks = self.tanks
         tanks_rewards = {tank: 0 for tank in tanks}
         for i, tank in enumerate(tanks):
             if i == 0:

@@ -2,8 +2,6 @@ from typing import Dict
 from math import sin, cos, radians, pi
 from cv2 import cv2
 import numpy as np
-from shapely.geometry import Polygon
-from shapely.strtree import STRtree
 
 from ai_trainer.envs.tank_simulation.env_obj import EnvObj
 import ai_trainer.envs.tank_simulation.environment as environment
@@ -40,11 +38,11 @@ class Tank(EnvObj):
         max_x, max_y, max_z, max_yaw, max_pitch = tank_env.max_drive_speeds
         self.gimbal_position += np.array([pitch, yaw])
         # Collision
-        tree = STRtree([Polygon(o.collision_poly) for o in tank_env.environment_objects if o is not self])
         new_pos = self.rect_position + np.array([x, y, z]) * np.array([max_x, max_y, max_z]) * tank_env.step_size
         new_pos[0] = min(max(new_pos[0], .1), tank_env.arena_size[0]-.1)
         new_pos[1] = min(max(new_pos[1], .1), tank_env.arena_size[1]-.1)
-        if not tree.query(Polygon(EnvObj(self.rect_shape, new_pos).collision_poly)):
+        new_pos[2] %= 2 * pi
+        if not EnvObj(self.rect_shape, new_pos).colliding(tank_env, ignore={self}):
             self.rect_position = new_pos
 
         self.fire = False
@@ -95,6 +93,7 @@ class Tank(EnvObj):
             tank
             for tank in tanks
             if -self.fov[0] / 2 < tank.angle_inside_frustum(origin, t_z + gimbal_yaw - pi / 2) < self.fov[0] / 2
+            # TODO: check if view is blocked
         ]
         if len(insight) > 0:
             closest = min(insight, key=lambda x: np.linalg.norm(x.get_location() - origin))
@@ -107,7 +106,7 @@ class Tank(EnvObj):
 
         # location and angles
         location = np.array([t_x / arena_width * 2 - 1, t_y / arena_height * 2 - 1])
-        angles = np.array([t_z, gimbal_pitch, gimbal_yaw]) / pi - 1
+        angles = np.array([t_z, gimbal_pitch, gimbal_yaw]) / pi - 1  # TODO: normalize gimbal angles by their maximal rotation
 
         # turret temperature
         temperature = np.array([self.turret_temperature / self.max_temperature])
