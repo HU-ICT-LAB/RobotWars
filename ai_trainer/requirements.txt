@@ -5,3 +5,4 @@ stable-baselines3
 gym
 supersuit==3.3.2
 shapely
+wandb
