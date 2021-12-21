@@ -12,7 +12,7 @@ Tank = tank.Tank
 
 
 class TankEnv(gym.Env):
-    metadata = {'render_modes': ['human']}
+    metadata = {'render_modes': ['rgb_array']}
     time = 0.
 
     def __init__(self):
@@ -46,7 +46,7 @@ class TankEnv(gym.Env):
         self.time = 0.
         return self.tanks[0].observe(self)
 
-    def render(self, mode="human"):
+    def render(self, mode="rgb_array"):
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
