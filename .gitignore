@@ -141,3 +141,6 @@ desktop.ini
 /robotwarsreact/npm-debug.log*
 /robotwarsreact/yarn-debug.log*
 /robotwarsreact/yarn-error.log*
+
+# database
+/server/service_account_key.json
