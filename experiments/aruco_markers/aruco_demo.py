@@ -35,7 +35,7 @@ while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
             corners = marker_corners.reshape((4, 2))
             (topLeft, topRight, bottomRight, bottomLeft) = corners
             cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
-            cv2.putText(frame, f"{round(np.linalg.norm(tvec)*10)}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
+            cv2.putText(frame, f"{(tvec*10).round()}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
 
     cv2.imshow(window_name, frame)
     k = cv2.waitKey(1)
