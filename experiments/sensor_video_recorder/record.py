@@ -1,5 +1,5 @@
+"""This program allows you to control the robot manual while recording the data about the position and speed."""
 import datetime
-import csv
 from PIL import Image
 
 from robomaster import robot
@@ -8,14 +8,18 @@ import numpy as np
 
 
 class SensorLogger:
+    """This class records the data of the robots subscribe functions and save it to a csv."""
+
     def __init__(self, sensor_title: str):
         self.filename = f"{sensor_title}.csv"
         self.sensor_log = []
 
     def log(self, sensor_input: tuple):
+        """Add the incoming data to the log together with the datetime."""
         self.sensor_log.append((datetime.datetime.now(), *sensor_input))
 
     def save(self):
+        """Save the log to a csv file."""
         with open(self.filename, 'a') as file:
             for row in self.sensor_log:
                 file.write(f"{';'.join(map(str, row))}\n")

@@ -1,7 +1,7 @@
 import React from 'react';
-import { MenuButton } from '../components/menu_button/menu_button';
+import MenuButton from "../components/menu_button"
 
-export const MenuPage = ()=> {
+export default function MenuPage() {
   return (
     <div>
       <h1 style={styles.title} >RobotWars Menu</h1>
