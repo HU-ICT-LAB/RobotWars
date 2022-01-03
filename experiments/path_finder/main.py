@@ -1,5 +1,6 @@
 """
 A simple path finding experiment using RTT on a given/drawn map.
+
 Controls:
 left-mouse-click: paint drivable space (white)
 right-mouse-click: paint undrivable space (black)
@@ -7,7 +8,7 @@ g: set goal location to cursor position
 r: set robot location to cursor position
 """
 
-from typing import Tuple, List, Union
+from typing import Tuple, List, Union, Collection
 from math import sin, cos, ceil, radians
 import threading
 import pygame
@@ -25,6 +26,8 @@ robot_speed = 0.6   # in meters per second
 
 
 class Robot:
+    """Internal model of the robomaster robot."""
+
     chassis_polygon = np.array([
         [-0.12, -0.16],
         [0.12, -0.16],
@@ -49,7 +52,12 @@ class Robot:
         self.color = color
         self.virtual_offset = space_size / 2
 
-    def draw(self, surface: pygame.Surface):
+    def draw(self, surface: pygame.Surface) -> None:
+        """
+        Draw this tank on the given surface visualizing the state of the internal model.
+
+        :param surface: Pygame surface to draw on.
+        """
         chassis_rotation_matrix = np.array([
             [cos(self.chassis_yaw), -sin(self.chassis_yaw)],
             [sin(self.chassis_yaw), cos(self.chassis_yaw)],
@@ -65,6 +73,8 @@ class Robot:
 
 
 class Node:
+    """One node in the tree structure."""
+
     def __init__(self, location: Tuple[float, float], parent: Union['Node', None], children: List['Node'] = None):
         self.location = location
         self.parent = parent
@@ -74,6 +84,13 @@ class Node:
             self.children = list(children)
 
     def cost(self) -> float:
+        """
+        Compute the cost of getting to this node from the root.
+
+        Aka the travel distance to the root.
+
+        :return: The cost aka distance.
+        """
         if self.parent is None:
             return 0.
         else:
@@ -81,11 +98,20 @@ class Node:
 
 
 class Tree:
+    """Tree structure."""
+
     def __init__(self):
         self.tiles = {}  # key: tile-coord, value: list of nodes in the tile
         self.all_nodes = []
 
     def add_node(self, node: Node) -> None:
+        """
+        Add the given node to the tree.
+
+        The tree groups the nodes into tiles to make searching faster.
+
+        :param node: The node to add to the tree.
+        """
         global max_step_size
         tile_coord = tuple(np.array(node.location) // max_step_size)
         if tile_coord not in self.tiles:
@@ -94,6 +120,15 @@ class Tree:
         self.all_nodes.append(node)
 
     def get_surrounding_nodes(self, location: Tuple[float, float]) -> List[Node]:
+        """
+        Get a list of nodes surrounding the given location.
+
+        The returned list is guaranteed to contain all the nodes within a radius of `max_step_size`.
+        A few nodes outside this circle can show up in the result.
+
+        :param location: The 2D location to search around.
+        :return: List of nodes.
+        """
         nodes = []
         center_tile_coord = np.array(location) // max_step_size
         for y_offset in range(-1, 2):
@@ -105,15 +140,24 @@ class Tree:
             return self.all_nodes
 
     @staticmethod
-    def closest_node(nodes: List[Node], location: Tuple[float, float]) -> Node:
+    def closest_node(nodes: Collection[Node], location: Tuple[float, float]) -> Node:
+        """
+        Return the closest node to the given location in the given collection of nodes.
+
+        :param nodes: Collection of nodes to search.
+        :param location: 2D location.
+        :return: Closest node.
+        """
         return min(nodes, key=lambda x: np.linalg.norm(np.subtract(x.location, location)))
 
     def clear(self) -> None:
+        """Remove all nodes from the tree."""
         self.tiles = {}
         self.all_nodes = []
 
 
-def update_obstacle_surface():
+def update_obstacle_surface() -> None:
+    """Update the global drivable_surface."""
     global drivable_surface
     drivable_surface = pygame.transform.scale(
         pygame.surfarray.make_surface(
@@ -123,7 +167,14 @@ def update_obstacle_surface():
     )
 
 
-def handle_position(position: Tuple[float, float, float]):
+def handle_position(position: Tuple[float, float, float]) -> None:
+    """
+    Handle the physical robot's position update.
+
+    Namely, give new drive instructions to the robot by following the build tree.
+
+    :param position: New position gotten from the physical robot.
+    """
     global robot0, tree, robot_speed
     x, y, z = position
     robot0.location = np.array([y, -x]) + robot0.virtual_offset
@@ -145,16 +196,23 @@ def handle_position(position: Tuple[float, float, float]):
     physical_robot.chassis.drive_speed(*drive_speed)
 
 
-def handle_angle(angle):
+def handle_angle(angle) -> None:
+    """
+    Handle the physical robot's angle update.
+
+    Namely, update the internal model of the robot.
+
+    :param angle: New angles gotten from the physical robot.
+    """
     global robot0
     pitch_angle, yaw_angle, pitch_ground_angle, yaw_ground_angle = angle
-    robot0.turret_yaw = -radians(yaw_ground_angle)
-    robot0.chassis_yaw = -radians(yaw_ground_angle-yaw_angle)
+    robot0.turret_yaw = - radians(yaw_ground_angle)
+    robot0.chassis_yaw = - radians(yaw_ground_angle - yaw_angle)
 
 
 drivable_mask = np.ones((space_size / cell_size).astype(int))
 drivable_surface: pygame.Surface
-erode_kernel = np.ones([ceil(distance_keeping / cell_size)]*2)
+erode_kernel = np.ones([ceil(distance_keeping / cell_size)] * 2)
 drivable_eroded = cv2.erode(drivable_mask, erode_kernel, iterations=1)
 
 update_obstacle_surface()
@@ -184,6 +242,13 @@ pygame.mouse.set_visible(False)
 
 
 def path_blocked(point1: Tuple[float, float], point2: Tuple[float, float]) -> bool:
+    """
+    Compute weather or not the path between the two given points is blocked by an undrivable section in the map.
+
+    :param point1: First point, either origin or destination, doesn't matter.
+    :param point2: Second point, either origin or destination, doesn't matter.
+    :return: Boolean representing weather the path is blocked or not.
+    """
     # This part is modified from https://www.codegrepper.com/code-examples/python/python+bresenham+line+algorithm
     global drivable_eroded, cell_size
     blocked = False
@@ -230,7 +295,8 @@ def path_blocked(point1: Tuple[float, float], point2: Tuple[float, float]) -> bo
     return blocked
 
 
-def build_tree():
+def build_tree() -> None:
+    """Asynchronous process that builds the global tree structure for the RRT* algorithm."""
     global tree, max_step_size, n_nodes, space_size, tree_building_terminate
     tree_building_terminate = False
     while len(tree.all_nodes) < n_nodes and not tree_building_terminate:
@@ -262,7 +328,8 @@ def build_tree():
         print("Done building tree")
 
 
-def reset_tree():
+def reset_tree() -> None:
+    """Clear global tree, terminate tree building process and start a new one."""
     global tree, tree_building_thread, tree_building_terminate, goal
     tree_building_terminate = True
     if tree_building_thread is not None:
@@ -273,9 +340,12 @@ def reset_tree():
     tree_building_thread.start()
 
 
-def main():
-    global clock, drivable_mask, drivable_surface, robot0, brush_size, goal, tree_building_thread, tree_building_terminate, drivable_eroded, follow
+def main() -> None:
+    """Main/game loop."""
+    global clock, drivable_mask, drivable_surface, robot0, brush_size, goal, tree_building_thread, \
+        tree_building_terminate, drivable_eroded, follow
 
+    screen_brush_size = None
     running = True
     while running:
         for event in pygame.event.get():
@@ -285,13 +355,13 @@ def main():
                 brush_size = max(brush_size + event.y * cell_size, cell_size)
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_g:
-                    goal = (np.array(pygame.mouse.get_pos()) + screen_brush_size/2) / screen_factor
+                    goal = (np.array(pygame.mouse.get_pos()) + screen_brush_size / 2) / screen_factor
                     reset_tree()
                 if event.key == pygame.K_f:
                     follow = not follow
         keys = pygame.key.get_pressed()
         if keys[pygame.K_r]:
-            robot0.location = (np.array(pygame.mouse.get_pos()) + screen_brush_size/2) / screen_factor
+            robot0.location = (np.array(pygame.mouse.get_pos()) + screen_brush_size / 2) / screen_factor
 
         left_click, middle_click, right_click = pygame.mouse.get_pressed(3)
         if left_click or right_click:
@@ -309,7 +379,7 @@ def main():
         screen.blit(drivable_surface, (0, 0))
         # draw cursor brush
         screen_brush_size = np.array([brush_size / cell_size] * 2) / drivable_mask.shape * screen.get_rect().size
-        screen.fill([128]*3, (*pygame.mouse.get_pos(), *screen_brush_size))
+        screen.fill([128] * 3, (*pygame.mouse.get_pos(), *screen_brush_size))
         # draw robot
         robot0.draw(screen)
         # draw goal and closest tree path
@@ -325,10 +395,11 @@ def main():
             # for node in tree.all_nodes:
             #     pygame.draw.circle(screen, (255, 100, 0), node.location * screen_factor, 2)
         # draw n_nodes
-        screen.blit(font.render(f"N_nodes: {len(tree.all_nodes)}", False, [128]*3), (10, 10))
+        screen.blit(font.render(f"N_nodes: {len(tree.all_nodes)}", False, [128] * 3), (10, 10))
         # draw cursor location
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        screen.blit(font.render(f"({mouse_x / screen_factor[0]:.2f}, {mouse_y / screen_factor[1]:.2f})", False, [128] * 3), (mouse_x, mouse_y-17))
+        screen.blit(font.render(f"({mouse_x / screen_factor[0]:.2f}, {mouse_y / screen_factor[1]:.2f})",
+                                False, [128] * 3), (mouse_x, mouse_y - 17))
 
         # Update the window
         pygame.display.update()
