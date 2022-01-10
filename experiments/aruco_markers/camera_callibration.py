@@ -32,7 +32,7 @@ for fname in images:
     we refine the pixel coordinates and display 
     them on the images of checker board
     """
-    if ret == True:
+    if ret:
         objpoints.append(objp)
         # refining pixel coordinates for given 2d points.
         corners2 = cv2.cornerSubPix(gray, corners, (11,11),(-1,-1), criteria)
@@ -43,7 +43,7 @@ for fname in images:
         img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2, ret)
     
     cv2.imshow('img', img)
-    cv2.waitKey(0)
+    cv2.waitKey(5)
 
 cv2.destroyAllWindows()
 
