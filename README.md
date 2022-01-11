@@ -3,7 +3,14 @@
 ## Description
 This project is commissioned by Hogeschool Utrecht. This project is originated with the purpose to excite potential new students about the HBO-ICT study. The main goal is to automatically make RoboMaster s1's lasergame with eachother. 
 
+The project is split into separate packages based on the machines it needs to run on, namely:
+- game-leader
+- robot
+- ai-trainer
+- database
+
 ## Installation
+To install a package from this project use the following command with the 
 To install the package run the following command:
 ```bash
 pip install .
