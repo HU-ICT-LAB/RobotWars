@@ -1,3 +1,4 @@
 opencv-contrib-python
 robomaster
 pygame
+pyyaml
