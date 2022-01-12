@@ -1,17 +1,19 @@
 import React from 'react';
-import MenuButton from "../components/menu_button"
-import RobotFeed from "../components/robot_feed"
-import RobotInfo from "../components/robot_info"
 import Header from "../components/header"
 
-
-export default function MenuPage() {
+export default function CreateGamePage() {
   return (
     <div style={styles.container}>
-      <Header/>
+      <div style={styles.header}>
+        <Header/>
+      </div>
       <div style={styles.content}>
-        <RobotInfo/>
-        <RobotFeed/>
+        <div>
+          Create game
+          field
+          field
+          field
+        </div>
       </div>
     </div>
   );
