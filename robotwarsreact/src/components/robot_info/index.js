@@ -24,6 +24,7 @@ const styles = {
         minWidth: "500px",
         display: "flex",
         flexDirection: "column",
+        borderRadius: "10px"
       },
     fields: {
         display: "flex",

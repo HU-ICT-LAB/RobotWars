@@ -5,7 +5,7 @@ import logo192 from "../../logo192.png"
 export default function Header() {
     return(
         <div style={styles.header}>
-            <img src={logo192} style={styles.logo}></img>
+            <img src={logo192} style={styles.logo} alt="Logo of robomaster"></img>
             <h1 style={styles.title}>RobotWars</h1>
             <NavigationBar></NavigationBar>
         </div>
@@ -15,10 +15,10 @@ export default function Header() {
 const styles = {
     title: {
         color: "#14FFEC",
-        paddingBottom: "20px",
         alignSelf: "center"
       },
       logo: {
+        marginTop: "10px",
         width: "96px",
         height: "96px",
         alignSelf: "center"

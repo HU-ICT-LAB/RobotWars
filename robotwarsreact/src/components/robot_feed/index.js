@@ -13,6 +13,7 @@ const styles = {
         padding: "10px",
         backgroundColor: "#323232",
         height: "360px",
-        width: "640px"
+        width: "640px",
+        borderRadius: "10px"
       },
 }

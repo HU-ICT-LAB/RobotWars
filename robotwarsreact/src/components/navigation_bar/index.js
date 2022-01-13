@@ -5,14 +5,14 @@ export default function NavigationBar() {
         <div style={styles.container}>
             <button style={styles.button} onClick={()=> window.location = "/"}>Home</button>
             <button style={styles.button} onClick={()=> window.location = "/create-game"}>Create Game</button>
-            <button style={styles.button} onClick={()=> window.location = "/"}>Game Overview</button>
+            <button style={styles.button} onClick={()=> window.location = "/game-overview"}>Game Overview</button>
         </div>
         );
 }
 
 const styles = {
     container: {
-        width: "90%",
+        width: "80%",
         backgroundColor: "#323232",
         alignSelf: "center",
         display: "flex",

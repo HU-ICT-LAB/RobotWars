@@ -1,12 +1,15 @@
 import React from 'react';
 
 export default function SelectRobotBox() {
+    function handleChange(event){
+        console.log(event.target.value)
+    }
+    
     return(
-    <select style={styles.select}>
+    <select style={styles.select} onChange={handleChange}>
         <option style={styles.selectOption}>Robot 1</option>
         <option style={styles.selectOption}>Robot 2</option>
         <option style={styles.selectOption}>Robot 3</option>
-        <option style={styles.selectOption}>Robot 4</option>
     </select>
     )
 }
