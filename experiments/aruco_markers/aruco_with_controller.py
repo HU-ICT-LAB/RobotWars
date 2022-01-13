@@ -17,7 +17,7 @@ def handle_gimbal_angle(gimbal_angle):
     relative_yaw = yaw_angle
 
 
-room_name = "test_corner.yaml"    # TODO
+room_name = "test_corner2.yaml"    # TODO
 with open(room_name, "r") as file:
     room_data = yaml.load(file, Loader=yaml.FullLoader)["aruco_codes"]
 
@@ -57,8 +57,19 @@ while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
         for i, (marker_id, marker_corners) in enumerate(zip(ids, corners)):
             rvec, tvec = ret[0][i, 0, :], ret[1][i, 0, :]
             coords = [i / 10 for i in room_data.get(int(marker_id))["coordinates"][0:2]]
-            robot_x_coords.append(coords[1]-tvec[0])
-            robot_y_coords.append(tvec[2]+coords[0]) # TODO maybe not so clean with this order
+            rotation = room_data.get(int(marker_id))["rotation"][0]
+            if rotation == 0:
+                robot_x_coords.append(coords[1] + tvec[2])
+                robot_y_coords.append(coords[0] + tvec[0])
+            if rotation == 90:
+                robot_x_coords.append(coords[1] - tvec[0])
+                robot_y_coords.append(coords[0] + tvec[2])
+            if rotation == 180:
+                robot_x_coords.append(coords[1] - tvec[2])
+                robot_y_coords.append(coords[0] - tvec[0])
+            if rotation == 270:
+                robot_x_coords.append(coords[1] + tvec[0])
+                robot_y_coords.append(coords[0] - tvec[2])  # TODO maybe not so clean with this order
             # aruco.drawDetectedMarkers(frame, corners)
             aruco.drawAxis(frame, camera_matrix, camera_dist, rvec, tvec, 10)
 
@@ -67,7 +78,7 @@ while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
             cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
             cv2.putText(frame, f"{(tvec*10).round()}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6,
                         (255, 255, 255))
-        calc_coords = [sum(robot_x_coords)/len(robot_x_coords), sum(robot_y_coords)/len(robot_y_coords)]
+        calc_coords = [(sum(robot_x_coords)/len(robot_x_coords))+10, (sum(robot_y_coords)/len(robot_y_coords))+10]
         pygame.draw.circle(screen, [0, 0, 0], calc_coords, 2, 2) # TODO
         pygame.display.update()
     cv2.imshow(window_name, frame)

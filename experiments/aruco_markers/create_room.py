@@ -45,13 +45,16 @@ data = {'aruco_codes': [{'id': 0, 'coordinates': [1.5, 2.5, 0], 'rotation': [0, 
                         {'id': 5, 'coordinates': [2.5, 0, 0.3], 'rotation': [90.0, 0.0, 0.0]},
                         {'id': 6, 'coordinates': [3, 0.5, 0.3], 'rotation': [270.0, 0.0, 0.0]},
                         {'id': 7, 'coordinates': [3, 2.5, 0.3], 'rotation': [270.0, 0.0, 0.0]}]}
-new_data = {'aruco_codes': {0:{ 'coordinates': [240, 0, 200], 'rotation': [0.0, 90.0, 0.0]},    # Distance in mm
-                            1:{'coordinates': [0, 620, 200], 'rotation': [90.0, 90.0, 0.0]}},
-                            }
-old_format = {'aruco_codes': {0:{ 'coordinates': [240, 0, 200], 'rotation': [0.0, 90.0, 0.0]},    # Distance in mm
-                            1:{'coordinates': [0, 620, 200], 'rotation': [90.0, 90.0, 0.0]}},
-                            }
+new_data = {'aruco_codes': {0: {'coordinates': [240, 0, 200], 'rotation': [0.0, 90.0, 0.0]},  # Distance in mm
+                            1: {'coordinates': [0, 620, 200], 'rotation': [90.0, 90.0, 0.0]}},
+            }
+test2 = {'aruco_codes': {0: {'coordinates': [0, 210, 200], 'rotation': [90.0, 90.0, 0.0]},  # Distance in mm
+                         1: {'coordinates': [500, 0, 200], 'rotation': [0.0, 90.0, 0.0]}},
+         }
+old_format = {'aruco_codes': {0: {'coordinates': [240, 0, 200], 'rotation': [0.0, 90.0, 0.0]},  # Distance in mm
+                              1: {'coordinates': [0, 620, 200], 'rotation': [90.0, 90.0, 0.0]}},
+              }
 
-create_room_direct("test_corner", new_data)
+create_room_direct("test_corner2", test2)
 # create_room("room3")
 print("done")
