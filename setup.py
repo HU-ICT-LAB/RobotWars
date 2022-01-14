@@ -6,13 +6,18 @@ from itertools import chain
 install_requires = [
     "mysql.connector",
     "robomaster==0.1.1.65",
-    "opencv-python>=4.2"
+    "opencv-python>=4.2",
+    "numpy"
 ]
 
 # Requirements per options
 extras = {
     "experiments": [
-        "imutils==0.5.4"
+        "imutils==0.5.4",
+        "Pillow",
+        "matplotlib",
+        "keyboard",
+        "MyQR"
     ],
     "ai_trainer": [],
     "game_leader": [
