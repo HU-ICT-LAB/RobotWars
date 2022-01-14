@@ -1,4 +1,4 @@
-"""All api calls. This api will be running on every robomaster"""
+"""All api calls. This api will be running on every robomaster."""
 import os
 import mysql.connector
 
@@ -40,7 +40,7 @@ def update_policy():
         retrieve_latest_policy()
         status = "policy updated"
         # ToDo Save policy to robot here.
-    except Exception as e:
+    except mysql.connector.errors.Error as e:
         print(e)
         status = "policy not updated"
     return jsonify(status)
@@ -57,7 +57,7 @@ def connect():
 def retrieve_latest_policy():
     """Retrieve policy with given id."""
     cursor = db.cursor()
-    cursor.execute(f"SELECT file FROM robotwars.policy ORDER BY policy_id DESC LIMIT 0, 1")
+    cursor.execute("SELECT file FROM robotwars.policy ORDER BY _id DESC LIMIT 0, 1")
     result = cursor.fetchone()[0]
     convert_binary_to_file(result, "py")
 
