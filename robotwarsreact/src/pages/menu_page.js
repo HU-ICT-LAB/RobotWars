@@ -1,25 +1,30 @@
 import React from 'react';
-import MenuButton from "../components/menu_button"
+import RobotFeed from "../components/robot_feed"
+import RobotInfo from "../components/robot_info"
+import Header from "../components/header"
+
 
 export default function MenuPage() {
   return (
-    <div>
-      <h1 style={styles.title} >RobotWars Menu</h1>
-      <div style={styles.buttons}>
-        <MenuButton text={"Get robots"} adress={"robots"}/>
-        <MenuButton text={"Start robots"} adress={"start"}/>
+    <div style={styles.container}>
+      <Header/>
+      <div style={styles.content}>
+        <RobotInfo/>
+        <RobotFeed/>
       </div>
     </div>
   );
 }
 
 const styles = {
-  title: {
-    color: "white",
-    paddingBottom: "20px",
+  container: {
+    width: "100%",
+    height: "100%",
   },
-
-  buttons: {
-    paddingBottom: "20px",
+  content: {
+    height: "50%",
+    margin: "20px",
+    display: "flex",
+    justifyContent: "space-evenly",
   },
 }
