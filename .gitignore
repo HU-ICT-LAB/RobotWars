@@ -135,12 +135,12 @@ dmypy.json
 desktop.ini
 
 # react frontend
-/robotwarsreact/node_modules
+/game_leader/robotwarsreact/node_modules
 /node_modules
 
-/robotwarsreact/npm-debug.log*
-/robotwarsreact/yarn-debug.log*
-/robotwarsreact/yarn-error.log*
+/game_leader/robotwarsreact/npm-debug.log*
+/game_leader/robotwarsreact/yarn-debug.log*
+/game_leader/robotwarsreact/yarn-error.log*
 
 # database
-/server/service_account_key.json
+/game_leader/server/service_account_key.json
