@@ -12,20 +12,22 @@ def connect():
                                    database=os.environ.get("DB_NAME"))
 
 
-def add_robot(name, modifications):
+def add_robot(name, modifications, database):
     """
     Add robot to the database.
 
+    :param database: The database the query needs to be performed in.
     :param name: Name of the robot.
     :param modifications: Short description of the robot it's modifications.
     """
     perform_query("INSERT INTO robot (name, description_of_modifications) VALUES (%s,%s)", (name, modifications))
 
 
-def add_policy(policy_description, policy_path):
+def add_policy(policy_description, policy_path, database):
     """
     Add policy to the database.
 
+    :param database: The database the query needs to be performed in.
     :param policy_description: Short description of the policy.
     :param policy_path: The path of where the policy file is stored.
     """
@@ -33,27 +35,29 @@ def add_policy(policy_description, policy_path):
     perform_query("INSERT INTO policy (description, file) VALUES(%s,%s)", (policy_description, file))
 
 
-def retrieve_policy(policy_id):
+def retrieve_policy(policy_id, database):
     """
     Retrieve policy with given id.
 
+    :param database: The database the query needs to be performed in.
     :param policy_id: The id of the policy that needs to be retrieved.
     """
-    cursor = db.cursor()
+    cursor = database.cursor()
     cursor.execute(f"SELECT file FROM robotwars.policy WHERE policy_id = {policy_id}")
     result = cursor.fetchone()[0]
     convert_binary_to_file(result, "py")
 
 
-def perform_query(query, values):
+def perform_query(query, values, database):
     """
     Perform any query.
 
+    :param database: The database the query needs to be performed in.
     :param query: The query that needs to be executed.
     :param values: The values for the query.
     """
-    db.cursor().execute(query, values)
-    db.commit()
+    database.cursor().execute(query, values)
+    database.commit()
 
 
 def convert_file_to_binary(path):
@@ -77,7 +81,3 @@ def convert_binary_to_file(binary_data, filetype):
     """
     with open(f"policy.{filetype}", "wb") as file:
         file.write(binary_data)
-
-
-if __name__ == "__main__":
-    db = connect()

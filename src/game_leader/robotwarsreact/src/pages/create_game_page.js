@@ -29,6 +29,7 @@ export default function CreateGamePage() {
       "robot1Team": state.robot1Team,
       "robot2Team": state.robot2Team,
       "robot3Team": state.robot3Team,
+      "gameTime": state.gameTime,
     })
   }).then(response => response.json())
   .then(data => console.log(data))

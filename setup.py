@@ -22,6 +22,7 @@ extras = {
     "ai_trainer": [],
     "game_leader": [
         "flask",
+        "flask-cors",
         "flask-sqlalchemy"
     ],
     "robot": []
