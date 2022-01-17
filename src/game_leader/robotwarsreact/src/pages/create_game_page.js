@@ -16,7 +16,22 @@ export default function CreateGamePage() {
               gameTime: ''}
 
   function handleSubmit() {
-    window.alert("submitted")
+    fetch("http://127.0.0.1:5000/api/v1/new_game", {
+    method: "POST",
+    headers: {
+      'Content-Type' : 'application/json',
+      },
+    body: JSON.stringify({
+      "name": state.gameName,
+      "description": state.gameDescription,
+      "gameHP": state.gameHP,
+      "gameMode": state.gameMode,
+      "robot1Team": state.robot1Team,
+      "robot2Team": state.robot2Team,
+      "robot3Team": state.robot3Team,
+    })
+  }).then(response => response.json())
+  .then(data => console.log(data))
   }
 
   function handleChange(event) {
@@ -75,7 +90,7 @@ export default function CreateGamePage() {
         <Header/>
       </div>
       <div style={styles.content}>
-        <form style={styles.form} onSubmit={handleSubmit}>
+        <div style={styles.form}>
           <label style={styles.label}>
             Name of the game:
             <input type="text" name="gameName" onChange={handleChange} />
@@ -120,8 +135,8 @@ export default function CreateGamePage() {
             Amount of time in seconds:
             <input type="number" name="gameTime" onChange={handleChange} />
           </label>
-          <input style={styles.submit} type="submit" value="Submit" />
-        </form>
+          <button style={styles.submit} onClick={handleSubmit}>Submit</button>
+        </div>
       </div>
     </div>
   );
