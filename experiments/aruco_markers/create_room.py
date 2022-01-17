@@ -30,7 +30,7 @@ def create_room(name: str) -> None:
         yaml.dump(data, file)
 
 
-def create_room_direct(name: str, data: dict):
+def create_room_direct(name: str, data: dict) -> None:
     with open(f"{name}.yaml", "w") as file:
         yaml.dump(data, file)
 
@@ -51,10 +51,14 @@ new_data = {'aruco_codes': {0: {'coordinates': [240, 0, 200], 'rotation': [0.0, 
 test2 = {'aruco_codes': {0: {'coordinates': [0, 210, 200], 'rotation': [90.0, 90.0, 0.0]},  # Distance in mm
                          1: {'coordinates': [500, 0, 200], 'rotation': [0.0, 90.0, 0.0]}},
          }
+
+test3 = {'aruco_codes': {0: {'coordinates': [0, 4100, 200], 'rotation': [90.0, 90.0, 0.0]},  # Distance in mm
+                         1: {'coordinates': [500, 2000, 200], 'rotation': [0.0, 90.0, 0.0]}},
+         }
 old_format = {'aruco_codes': {0: {'coordinates': [240, 0, 200], 'rotation': [0.0, 90.0, 0.0]},  # Distance in mm
                               1: {'coordinates': [0, 620, 200], 'rotation': [90.0, 90.0, 0.0]}},
               }
 
-create_room_direct("test_corner2", test2)
+create_room_direct("test_corner3", test3)
 # create_room("room3")
 print("done")
