@@ -1,11 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom'
 
 export default function NavigationBar() {
+    const navigate = useNavigate();
+
     return (
         <div style={styles.container}>
-            <button style={styles.button} onClick={()=> window.location = "/"}>Home</button>
-            <button style={styles.button} onClick={()=> window.location = "/create-game"}>Create Game</button>
-            <button style={styles.button} onClick={()=> window.location = "/game-overview"}>Game Overview</button>
+            <button style={styles.button} onClick={()=> navigate("/")}>Home</button>
+            <button style={styles.button} onClick={()=> navigate("/create-game")}>Create Game</button>
+            <button style={styles.button} onClick={()=> navigate("/game-overview")}>Game Overview</button>
         </div>
         );
 }
