@@ -3,7 +3,7 @@ import React from 'react';
 export default function RobotFeed() {
     return(
         <div style={styles.robotFeed}>
-            *Insert camera live feed here*
+            <iframe style={styles.cam} src="http://192.168.178.11:4747/video" allow="camera;"></iframe>
         </div>
     )
 }
@@ -16,4 +16,8 @@ const styles = {
         width: "640px",
         borderRadius: "10px"
       },
+      cam: {
+          width: "100%",
+          height: "100%"
+      }
 }
