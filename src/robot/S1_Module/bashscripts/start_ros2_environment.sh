@@ -15,7 +15,7 @@ xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
 chmod 777 $XAUTH
 
 
-sudo docker run -i -t --privileged -v /dev/input/:/dev/input/ --runtime nvidia --rm --network host -e DISPLAY=$DISPLAY \
+sudo docker run -i -t --privileged -v /dev/bus/usb:/dev/bus/usb -v /dev/input/:/dev/input/ --runtime nvidia --rm --network host -e DISPLAY=$DISPLAY \
     -v /tmp/.X11-unix/:/tmp/.X11-unix \
     -v $XAUTH:$XAUTH -e XAUTHORITY=$XAUTH \
     -v $LOCAL_DIRECTORY:/mnt \

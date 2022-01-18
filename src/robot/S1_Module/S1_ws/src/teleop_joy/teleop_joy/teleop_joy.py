@@ -5,18 +5,9 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Header
 
-#Define the linear speed multipliers to be used when sending twist commands, denoted as [x, y]
-#(z is skipped for the robomaster S1 cannot fly
-LINEAR_SPEED = [40.0, 40.0] 
-
-#Define the angular speed multipliers to be used when sending twist commands, denoted as [x, y]
-#(z is skipped for the S1's gimbal does not turn around the z-axis
-ANGULAR_SPEED = [40.0, 40.0]
-
-
 
 #A variable determining wether verbose prints should be used
-VERBOSE_PRINT = True
+VERBOSE_PRINT = False
 
 
 class TeleopJoy(Node):
@@ -27,12 +18,18 @@ class TeleopJoy(Node):
     def __init__(self):
         super().__init__("teleop_joy")
 
-        #These should be changed to ROS parameters
-        self.linear_speed_x = 1.0
-        self.linear_speed_y = 1.0
-        self.angular_speed_pitch = 1.0
-        self.angular_speed_yaw = 1.0
-    
+
+        #Declare node parameters for linear and angular speeds
+        #These parameters should only be changed using a launch file
+        self.declare_parameters(
+            namespace='',
+            parameters=[
+                ('linear_speed__x', 40.0),
+                ('linear_speed__y', 40.0),
+                ('angular_speed__pitch', 40.0),
+                ('angular_speed__yaw', 40.0)
+            ]
+        )
 
         #Create a publisher for twist messages on the /cmd_vel topic
         self.twist_publisher = self.create_publisher(geometry_msgs.msg.Twist, '/cmd_vel', 10)
@@ -52,14 +49,16 @@ class TeleopJoy(Node):
         joy_buttons = joy_msg.buttons
        
         #Extract the linear velocity in x and y direction
-        linear_x = joy_axes[0] * self.linear_speed_x
-        linear_y = joy_axes[1] * self.linear_speed_y
-        angular_pitch = joy_axes[4] * self.angular_speed_pitch
-        angular_yaw = joy_axes[3] * self.angular_speed_yaw
 
-    
+        linear_x = joy_axes[0] * self.get_parameter('linear_speed__x').value
+        linear_y = joy_axes[1] * self.get_parameter('linear_speed__y').value
+        angular_pitch= joy_axes[4] * self.get_parameter('angular_speed__pitch').value
+        angular_yaw = joy_axes[3] * self.get_parameter('angular_speed__yaw').value
         #Publish the twist commands
         self.teleop_publish(linear_x, linear_y, angular_pitch, angular_yaw)
+
+
+        #self.get_logger().info("params: {}, {}, {}, {}".format(self.get_parameter('linear_speed__x').value, self.get_parameter('linear_speed__y').value, self.get_parameter('angular_speed__pitch').value, self.get_parameter('angular_speed__yaw').value))
 
 
 
@@ -68,17 +67,17 @@ class TeleopJoy(Node):
         twist = geometry_msgs.msg.Twist()
 
         #Multiply the linear joy inputs with the specified speeds
-        twist.linear.x = linear_x * LINEAR_SPEED[0]
-        twist.linear.y = linear_y * LINEAR_SPEED[1]
+        twist.linear.x = linear_x #* LINEAR_SPEED[0]
+        twist.linear.y = linear_y #* LINEAR_SPEED[1]
         twist.linear.z = 0.0
 
         
-        twist.angular.x = angular_pitch * ANGULAR_SPEED[0]
-        twist.angular.y = angular_yaw * ANGULAR_SPEED[1]
+        twist.angular.x = angular_pitch #* ANGULAR_SPEED[0]
+        twist.angular.y = angular_yaw #* ANGULAR_SPEED[1]
         twist.angular.z = 0.0
 
         #Print if running in verbose mode
-        if VERBOSE_PRINTING:
+        if VERBOSE_PRINT:
             print("\n============================\nPublishing:\n")
             print("Linear:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.linear.x, twist.linear.y, twist.linear.z)) 
             print("Angular:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.angular.x, twist.angular.y, twist.angular.z)) 

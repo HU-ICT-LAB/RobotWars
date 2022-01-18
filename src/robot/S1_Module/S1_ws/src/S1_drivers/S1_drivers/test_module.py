@@ -1,9 +1,6 @@
-import rclpy
-from rclpy.node import Node
 
 from robomaster import robot as robomaster_robot
 
-import geometry_msgs.msg
 
 #The max movement speed of the chassis and gimball, denoted with x,y,z axis
 MAX_SPEED__CHASSIS = [30.0, 30.0, 0.0]
@@ -13,7 +10,7 @@ MAX_SPEED__GIMBAL = [30.0, 30.0, 0.0]
 MIN_SPEED__CHASSIS = [-30.0, -30.0, 0.0]
 MIN_SPEED__GIMBAL = [-30.0, -30.0, 0.0]
 
-class S1_driver(Node):
+class S1_driver():
     """
     This class is used for all communications with a robomaster S1 module. 
     It subscribes to the /cmd_vel topic to obtain movement instructions.
@@ -23,8 +20,6 @@ class S1_driver(Node):
 
     def __init__(self, sn):
 
-        #Initialize the node
-        super().__init__('S1_driver')
 
         #Initialize the robot
         print("Connecting to robomaster...")
@@ -42,13 +37,10 @@ class S1_driver(Node):
         self.robot.gimbal.recenter()
 
         #Create subscriber for the /cmd_vel movement commands
-        self.twist_sub = self.create_subscription(geometry_msgs.msg.Twist, '/cmd_vel', self.twistCallback, 10)
 
         #Create an rclpy timer instance that triggers a safety mechanism when no input are received before the timer runs out
-        self.failsafe_timer = self.create_timer(3.0, self.failsafeCallback)
 
         #Prevent "unused variable" error
-        self.twist_sub
 
         #Declare parameters for this S1_instance.
         """
@@ -85,7 +77,6 @@ class S1_driver(Node):
         self.stopGimballMovement()
 
         #report the failsafe trigger
-        self.get_logger().info("Failsafe triggered after no commands were received before timer runout")
 
 
 
@@ -120,7 +111,7 @@ class S1_driver(Node):
         #Clamp the value between the max and min values and return
         return max(min(max_value, value), min_value)
 
-
+    """
     def twistCallback(self, msg):
 
         #Initialize the guard clause
@@ -145,13 +136,12 @@ class S1_driver(Node):
         print("\n============================\Received:\n")
         print("Linear:\n\tx: {}\n\ty: {}".format(linear_speed[0], linear_speed[1]))
         print("Angular:\n\tx: {}\n\ty: {}".format(angular_speed[0], angular_speed[1])) 
-    
+   """ 
 
 
 def main(args=None):
 
     #Initialize rclpy
-    rclpy.init(args=args)
     
     #Define serial number of robot
     sn = "159CGAC0050R76"
@@ -161,13 +151,9 @@ def main(args=None):
 
 
     #Spin the s1 driver instance to use subscriber
-    rclpy.spin(S1)
 
 
     #Destroy the node explicitly
-    S1.destroy_node()
-
-    rclpy.shutdown()
 
 
 
