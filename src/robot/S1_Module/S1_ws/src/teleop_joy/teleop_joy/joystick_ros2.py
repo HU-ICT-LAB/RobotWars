@@ -234,7 +234,6 @@ class JoystickRos2(Node):
                     device_manager.find_devices()
                     continue
 
-            print("hoi")
             # read inputs from joystick
             while True:
                 try:
@@ -255,7 +254,6 @@ class JoystickRos2(Node):
                                 self.last_event = event
                             elif (event.ev_type == 'Absolute'):
                                 value_range = JOYSTICK_CODE_VALUE_MAP[event.device.name][1][key_code]
-                                print(value_range)
                                 self.joy.axes[key_code] = self.normalize_key_value(value_range[0], value_range[1], event.state)
                                 if (self.last_event is None) or (self.last_event.code != event.code) or (time.time() - self.last_publish_time > self.coalesce_interval):
                                     self.publish_joy()

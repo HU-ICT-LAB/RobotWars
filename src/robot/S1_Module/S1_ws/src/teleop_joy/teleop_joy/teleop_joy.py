@@ -5,7 +5,18 @@ from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Header
 
+#Define the linear speed multipliers to be used when sending twist commands, denoted as [x, y]
+#(z is skipped for the robomaster S1 cannot fly
+LINEAR_SPEED = [40.0, 40.0] 
 
+#Define the angular speed multipliers to be used when sending twist commands, denoted as [x, y]
+#(z is skipped for the S1's gimbal does not turn around the z-axis
+ANGULAR_SPEED = [40.0, 40.0]
+
+
+
+#A variable determining wether verbose prints should be used
+VERBOSE_PRINT = True
 
 
 class TeleopJoy(Node):
@@ -39,18 +50,7 @@ class TeleopJoy(Node):
         #Extract the joy message data
         joy_axes = joy_msg.axes
         joy_buttons = joy_msg.buttons
-
-        #ALL PARTS BELOW NEED TO BE FINETUNED ONCE RUN WITH THE ACTUAL TOPIC
-        """
-        print("\n============================\nNEW MESSAGE:\n")
-        print("Axes data:")
-        for axis_index in range(0, len(joy_axes)):
-            print("\tAxis {}:\t{}".format(axis_index, joy_axes[axis_index]))
-        print("Button data:")
-        for button_index in range(0, len(joy_buttons)):
-            print("\tButton {}:\t{}".format(button_index, joy_buttons[button_index]))
-        """
-        
+       
         #Extract the linear velocity in x and y direction
         linear_x = joy_axes[0] * self.linear_speed_x
         linear_y = joy_axes[1] * self.linear_speed_y
@@ -66,15 +66,22 @@ class TeleopJoy(Node):
     def teleop_publish(self, linear_x, linear_y, angular_pitch, angular_yaw):
         #Create a twist message instance
         twist = geometry_msgs.msg.Twist()
-        twist.linear.x = linear_x
-        twist.linear.y = linear_y
+
+        #Multiply the linear joy inputs with the specified speeds
+        twist.linear.x = linear_x * LINEAR_SPEED[0]
+        twist.linear.y = linear_y * LINEAR_SPEED[1]
         twist.linear.z = 0.0
-        twist.angular.x = angular_pitch
-        twist.angular.y = angular_yaw
+
+        
+        twist.angular.x = angular_pitch * ANGULAR_SPEED[0]
+        twist.angular.y = angular_yaw * ANGULAR_SPEED[1]
         twist.angular.z = 0.0
-        print("\n============================\nPublishing:\n")
-        print("Linear:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.linear.x, twist.linear.y, twist.linear.z)) 
-        print("Angular:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.angular.x, twist.angular.y, twist.angular.z)) 
+
+        #Print if running in verbose mode
+        if VERBOSE_PRINTING:
+            print("\n============================\nPublishing:\n")
+            print("Linear:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.linear.x, twist.linear.y, twist.linear.z)) 
+            print("Angular:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.angular.x, twist.angular.y, twist.angular.z)) 
 
         #Publish the message
         self.twist_publisher.publish(twist)

@@ -29,7 +29,9 @@ class S1_driver(Node):
         #Initialize the robot
         print("Connecting to robomaster...")
         self.robot = robomaster_robot.Robot()
-        self.robot.initialize(conn_type="sta", sn=sn)
+
+        #Initialize in USB-mode. For router mode, change conn_type to 'sta'
+        self.robot.initialize(conn_type="rndis", sn=sn)
         print("Connected!")
 
 
