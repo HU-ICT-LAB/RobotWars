@@ -21,7 +21,7 @@ from rclpy.node import Node
 
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Header
-from inputs import devices, UnpluggedError
+from teleop_joy.inputs import devices, UnpluggedError
 
 # Microsoft X-Box 360 pad
 XINPUT_CODE_MAP = {

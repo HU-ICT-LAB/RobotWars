@@ -4,7 +4,7 @@
 CONTAINER_IMAGE="jetson/ros25"
 
 #Set the name of the local directory you want to access within the image
-LOCAL_DIRECTORY=~/Documents/github/RobotWars/src/robot/
+LOCAL_DIRECTORY=~/Documents/github/RobotWars/src/robot/S1_Module/
 
 #Give docker root user X11 permissions
 sudo xhost +si:localuser:root
