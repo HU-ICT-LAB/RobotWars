@@ -19,7 +19,14 @@ extras = {
         "keyboard",
         "MyQR"
     ],
-    "ai_trainer": [],
+    "ai_trainer": [
+        "pettingzoo[butterfly]>=1.13.1",
+        "stable-baselines3",
+        "gym",
+        "supersuit==3.3.2",
+        "shapely",
+        "wandb"
+    ],
     "game_leader": [
         "flask",
         "flask-sqlalchemy"
