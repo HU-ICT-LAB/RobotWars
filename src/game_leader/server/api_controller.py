@@ -22,7 +22,7 @@ def create_new_game():
     return jsonify(response)
 
 
-@app.route("/api/v1/active_games")
+@app.route("/api/v1/active_games", methods=["GET"])
 def get_all_ongoing_games():
     """
     Get all ongoing games.
@@ -32,7 +32,7 @@ def get_all_ongoing_games():
     try:
         response = active_games()
     except connector.errors.Error as e:
-        response = {"success": False, "message": e}, 500
+        response = {"success": False, "message": str(e)}, 404
     return jsonify(response)
 
 

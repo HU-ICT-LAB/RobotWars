@@ -34,5 +34,16 @@ def active_games():
 
     :return: All active games from database.
     """
-    db.cursor.execute("SELECT * FROM game_session WHERE is_active = TRUE")
-    return db.cursor.fetchall()
+    cursor = db.cursor()
+    cursor.execute("SELECT game_name, description, robot_1_team, robot_2_team, robot_3_team"
+                   " FROM game_session WHERE is_active = TRUE")
+    games = []
+    results = cursor.fetchall()
+    for result in results:
+        games.append({"name": result[0],
+                      "description": result[1],
+                      "robot1Team": result[2],
+                      "robot2Team": result[3],
+                      "robot3Team": result[4]})
+    return games
+
