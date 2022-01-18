@@ -1,15 +1,15 @@
-import React from 'react';
-import Header from "../components/header"
-import CreateGame from '../components/create_game';
+import React from "react";
+import Header from "../components/header";
+import CreateGame from "../components/create_game";
 
 export default function CreateGamePage() {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <Header/>
+        <Header />
       </div>
       <div style={styles.content}>
-        <CreateGame/>
+        <CreateGame />
       </div>
     </div>
   );
@@ -26,4 +26,4 @@ const styles = {
     display: "flex",
     justifyContent: "space-evenly",
   },
-}
+};
