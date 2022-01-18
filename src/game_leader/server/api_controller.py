@@ -2,7 +2,8 @@
 import mysql.connector as connector
 from flask import Flask, jsonify, request
 from flask_cors import cross_origin
-from src.game_leader.server.service import new_game, get_active_games, all_robots
+from src.game_leader.server.service import new_game, \
+    get_active_games, all_robots
 
 
 app = Flask(__name__)

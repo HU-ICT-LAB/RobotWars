@@ -15,7 +15,8 @@ def new_game(game_information):
     perform_write_query("INSERT INTO game_session ("
                         "game_name, description, game_mode, "
                         "robot_1_team, robot_2_team, robot_3_team, "
-                        "max_robot_hp, game_time, is_active) VALUES(%s,%s,%s,%s,%s,%s,%s,%s, %s)",
+                        "max_robot_hp, game_time, is_active) "
+                        "VALUES(%s,%s,%s,%s,%s,%s,%s,%s, %s)",
                         (game_information["name"],
                          game_information["description"],
                          game_information["gameMode"],
@@ -56,7 +57,6 @@ def all_robots():
 
     :return: All robots in database.
     """
-
     cursor = db.cursor()
     cursor.execute("SELECT * FROM robot")
     robots = []
@@ -67,4 +67,3 @@ def all_robots():
                        "hp": result[3],
                        "location": result[4]})
     return robots
-
