@@ -1,9 +1,9 @@
 import React from 'react';
 
 export default function CreateGame() {
-  var robot1 = React.createRef();
-  var robot2 = React.createRef();
-  var robot3 = React.createRef();
+  let robot1 = React.createRef();
+  let robot2 = React.createRef();
+  let robot3 = React.createRef();
 
   var state = {gameName: '',
               gameMode: 'Free for all',
@@ -44,17 +44,17 @@ export default function CreateGame() {
       case 'gameMode':
         state.gameMode = value;
         if(value === "Free for all") {
-          state.robot1Team = ''
-          state.robot2Team = ''
-          state.robot3Team = ''
+          state.robot1Team = 0
+          state.robot2Team = 0
+          state.robot3Team = 0
           robot1.current.disabled = true
           robot2.current.disabled = true
           robot3.current.disabled = true
         }
         if(value === "Team Deathmatch") {
-          state.robot1Team = 'Team 1'
-          state.robot2Team = 'Team 1'
-          state.robot3Team = 'Team 1'
+          state.robot1Team = 1
+          state.robot2Team = 1
+          state.robot3Team = 1
           robot1.current.disabled = false
           robot2.current.disabled = false
           robot3.current.disabled = false
@@ -99,22 +99,22 @@ export default function CreateGame() {
           <label style={styles.label}>
             Robot 1 Team:
             <select ref={robot1} disabled={true} style={styles.selectBox} name="robot1Team" onChange={handleChange}>
-              <option>Team 1</option>
-              <option>Team 2</option>
+              <option>1</option>
+              <option>2</option>
             </select>
           </label>
           <label style={styles.label}>
             Robot 2 Team:
             <select ref={robot2} disabled={true} style={styles.selectBox} name="robot2Team" onChange={handleChange}>
-              <option>Team 1</option>
-              <option>Team 2</option>
+              <option>1</option>
+              <option>2</option>
             </select>
           </label>
           <label style={styles.label}>
             Robot 3 Team:
             <select ref={robot3} disabled={true} style={styles.selectBox} name="robot3Team" onChange={handleChange}>
-              <option>Team 1</option>
-              <option>Team 2</option>
+              <option>1</option>
+              <option>2</option>
             </select>
           </label>
           <label style={styles.label}>

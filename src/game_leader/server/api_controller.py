@@ -2,7 +2,7 @@
 import mysql.connector as connector
 from flask import Flask, jsonify, request
 from flask_cors import cross_origin
-from src.game_leader.server.service import new_game, active_games
+from src.game_leader.server.service import new_game, get_active_games
 
 
 app = Flask(__name__)
@@ -23,6 +23,7 @@ def create_new_game():
 
 
 @app.route("/api/v1/active_games", methods=["GET"])
+@cross_origin()
 def get_all_ongoing_games():
     """
     Get all ongoing games.
@@ -30,10 +31,10 @@ def get_all_ongoing_games():
     :return: All active games.
     """
     try:
-        response = active_games()
+        response = get_active_games()
     except connector.errors.Error as e:
         response = {"success": False, "message": str(e)}, 404
-    return jsonify(response)
+    return jsonify(response, 200)
 
 
 @app.route("/api/v1/start_robots")

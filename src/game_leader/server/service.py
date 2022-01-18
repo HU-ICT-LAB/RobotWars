@@ -28,22 +28,24 @@ def new_game(game_information):
     return True
 
 
-def active_games():
+def get_active_games():
     """
     Get all active games from database.
 
     :return: All active games from database.
     """
     cursor = db.cursor()
-    cursor.execute("SELECT game_name, description, robot_1_team, robot_2_team, robot_3_team"
-                   " FROM game_session WHERE is_active = TRUE")
+    cursor.execute("SELECT * FROM game_session WHERE is_active = TRUE")
     games = []
     results = cursor.fetchall()
     for result in results:
-        games.append({"name": result[0],
-                      "description": result[1],
-                      "robot1Team": result[2],
-                      "robot2Team": result[3],
-                      "robot3Team": result[4]})
+        games.append({"name": result[3],
+                      "description": result[2],
+                      "robot1Team": result[4],
+                      "robot2Team": result[5],
+                      "robot3Team": result[6],
+                      "gameTime": result[8],
+                      "maxHp": result[7],
+                      "gameMode": result[9]})
     return games
 
