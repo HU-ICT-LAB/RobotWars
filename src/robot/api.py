@@ -1,9 +1,8 @@
 """All api calls. This api will be running on every robomaster."""
 import os
-import mysql.connector
+import mysql.connector as connector
 
 from flask import Flask, jsonify
-
 
 app = Flask(__name__)
 
@@ -40,7 +39,7 @@ def update_policy():
         retrieve_latest_policy()
         status = "policy updated"
         # ToDo Save policy to robot here.
-    except mysql.connector.errors.Error as e:
+    except connector.errors.Error as e:
         print(e)
         status = "policy not updated"
     return jsonify(status)
@@ -48,16 +47,16 @@ def update_policy():
 
 def connect():
     """Connect to the database."""
-    return mysql.connector.connect(host=os.environ.get("DB_URL"),
-                                   user=os.environ.get("DB_USER"),
-                                   password=os.environ.get("DB_PASSWORD"),
-                                   database=os.environ.get("DB_NAME"))
+    return connector.connect(host=os.environ.get("DB_URL"),
+                             user=os.environ.get("DB_USER"),
+                             password=os.environ.get("DB_PASSWORD"),
+                             database=os.environ.get("DB_NAME"))
 
 
 def retrieve_latest_policy():
     """Retrieve policy with given id."""
     cursor = db.cursor()
-    cursor.execute("SELECT file FROM robotwars.policy ORDER BY _id DESC LIMIT 0, 1")
+    cursor.execute("SELECT file FROM policy ORDER BY policy_id DESC LIMIT 0, 1")
     result = cursor.fetchone()[0]
     convert_binary_to_file(result, "py")
 
