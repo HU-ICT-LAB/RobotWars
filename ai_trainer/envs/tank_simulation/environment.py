@@ -46,15 +46,15 @@ class TankEnv(gym.Env):
         self.time = 0.
         return self.tanks[0].observe(self)
 
-    def render(self, mode="rgb_array"):
+    def render(self, mode="rgb_array", verbosity: int = 1):
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
             if environment_object is self.tanks[0]:
                 environment_object: Tank
-                canvas = environment_object.render(canvas, self, color=(1, 0, 0))
+                canvas = environment_object.render(canvas, self, verbosity, color=(1, .2, .2))
             else:
-                canvas = environment_object.render(canvas, self)
+                canvas = environment_object.render(canvas, self, verbosity)
         return canvas
 
     def step(self, action):

@@ -113,26 +113,27 @@ class Tank(EnvObj):
 
         return np.concatenate([lidar_output, bbox_center, bbox_size, location, angles, temperature])
 
-    def render(self, canvas: np.array, env: 'environment.TankEnv', mode="human", color=(255, 255, 255)) -> np.array:
+    def render(self, canvas: np.array, env: 'environment.TankEnv', verbosity: int = 1, color=(255, 255, 255)) -> np.array:
         rect_x, rect_y, rect_z = self.rect_position
         origin = np.array([rect_x, rect_y])
         pitch, yaw = self.gimbal_position
         screen_factor = np.array(env.canvas_size) / np.array(env.arena_size)
 
         # chassis
-        cv2.polylines(canvas, np.int32([self.collision_poly * screen_factor]), True, color)
+        cv2.polylines(canvas, np.int32([self.collision_poly * screen_factor]), True, color, 2)
         # turret
         polygon = (self.turret_polygon @ create_2d_rotation_matrix(rect_z + yaw) + self.get_location()) * screen_factor
-        cv2.polylines(canvas, np.int32([polygon]), True, (0., 1 - (self.turret_temperature / self.max_temperature), 1.))
+        cv2.polylines(canvas, np.int32([polygon]), True, (0., 1 - (self.turret_temperature / self.max_temperature), 1.), 2)
 
-        # lidar
-        ray_slice = (2 * pi) / env.n_lidar_rays
-        for i in range(env.n_lidar_rays):
-            direction = (rect_z + ray_slice * i) % (2 * pi)
-            hits = env.shoot_ray(origin, direction, {self})
-            if len(hits) > 0:
-                obj, collision_point = closest_collision(origin, hits)
-                cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple((collision_point * screen_factor).astype(int)), (.2, .2, .2), 1)
+        if verbosity >= 3:
+            # lidar
+            ray_slice = (2 * pi) / env.n_lidar_rays
+            for i in range(env.n_lidar_rays):
+                direction = (rect_z + ray_slice * i) % (2 * pi)
+                hits = env.shoot_ray(origin, direction, {self})
+                if len(hits) > 0:
+                    obj, collision_point = closest_collision(origin, hits)
+                    cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple((collision_point * screen_factor).astype(int)), (.2, .2, .2), 2)
 
         # fire
         if self.fire:
@@ -140,22 +141,23 @@ class Tank(EnvObj):
             if len(hits) > 0:
                 obj, collision_point = closest_collision(origin, hits)
                 cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple((collision_point * screen_factor).astype(int)),
-                         (0, 0, 1), 1)
+                         (0, 0, 1), 2)
 
-        # object detection
-        tanks = list(filter(lambda x: isinstance(x, Tank) and x is not self, env.environment_objects))
-        insight = [
-            tank
-            for tank in tanks
-            if -self.fov[0] / 2 < tank.angle_inside_frustum(origin, rect_z + yaw - pi/2) < self.fov[0] / 2
-        ]
-        if len(insight) > 0:
-            closest = min(insight, key=lambda x: np.linalg.norm(x.get_location() - origin))
-            distance = np.linalg.norm(closest.get_location() - origin)
-            angle_inside = closest.angle_inside_frustum(origin, rect_z + yaw - pi/2)
-            bbox = np.array([cos(angle_inside+rect_z+yaw - pi/2), sin(angle_inside+rect_z+yaw - pi/2)]) * (1/distance) + origin
-            cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple((bbox * screen_factor).astype(int)), (0., 1., 0.), 1)
-        cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple(((origin + np.array([cos(rect_z+yaw-pi/2-self.fov[0]/2), sin(rect_z+yaw-pi/2-self.fov[0]/2)]))*screen_factor).astype(int)), (.5, .5, .5), 1)
-        cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple(((origin + np.array([cos(rect_z+yaw-pi/2+self.fov[0]/2), sin(rect_z+yaw-pi/2+self.fov[0]/2)]))*screen_factor).astype(int)), (.5, .5, .5), 1)
+        if verbosity >= 2:
+            # object detection
+            tanks = list(filter(lambda x: isinstance(x, Tank) and x is not self, env.environment_objects))
+            insight = [
+                tank
+                for tank in tanks
+                if -self.fov[0] / 2 < tank.angle_inside_frustum(origin, rect_z + yaw - pi/2) < self.fov[0] / 2
+            ]
+            if len(insight) > 0:
+                closest = min(insight, key=lambda x: np.linalg.norm(x.get_location() - origin))
+                distance = np.linalg.norm(closest.get_location() - origin)
+                angle_inside = closest.angle_inside_frustum(origin, rect_z + yaw - pi/2)
+                bbox = np.array([cos(angle_inside+rect_z+yaw - pi/2), sin(angle_inside+rect_z+yaw - pi/2)]) * (1/distance) + origin
+                cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple((bbox * screen_factor).astype(int)), (0., 1., 0.), 2)
+            cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple(((origin + np.array([cos(rect_z+yaw-pi/2-self.fov[0]/2), sin(rect_z+yaw-pi/2-self.fov[0]/2)]))*screen_factor).astype(int)), (.5, .5, .5), 2)
+            cv2.line(canvas, tuple((origin * screen_factor).astype(int)), tuple(((origin + np.array([cos(rect_z+yaw-pi/2+self.fov[0]/2), sin(rect_z+yaw-pi/2+self.fov[0]/2)]))*screen_factor).astype(int)), (.5, .5, .5), 2)
 
         return canvas

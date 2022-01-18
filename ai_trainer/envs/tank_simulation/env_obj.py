@@ -18,7 +18,7 @@ class EnvObj:
         x, y, z = self.rect_position
         return np.array([x, y])
 
-    def render(self, canvas: np.array, env: 'environment.TankEnv') -> np.array:
+    def render(self, canvas: np.array, env: 'environment.TankEnv', verbosity: int = 1) -> np.array:
         rect_width, rect_height = self.rect_shape
         rect_x, rect_y, rect_z = self.rect_position
         screen_factor = np.array(env.canvas_size) / np.array(env.arena_size)
@@ -31,7 +31,7 @@ class EnvObj:
         ])
         polygon = (polygon @ create_2d_rotation_matrix(rect_z) + np.array([rect_x, rect_y])) * screen_factor
 
-        cv2.polylines(canvas, np.int32([polygon]), True, (255, 255, 255))
+        cv2.polylines(canvas, np.int32([polygon]), True, (255, 255, 255), 2)
         return canvas
 
     def angle_inside_frustum(self, origin: np.array, direction: float) -> float:
