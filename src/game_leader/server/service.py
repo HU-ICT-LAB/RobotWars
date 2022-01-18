@@ -40,7 +40,7 @@ def get_active_games():
     results = cursor.fetchall()
     for result in results:
         games.append({"name": result[3],
-                      "description": result[2],
+                      "description": result[1],
                       "robot1Team": result[4],
                       "robot2Team": result[5],
                       "robot3Team": result[6],
@@ -48,4 +48,23 @@ def get_active_games():
                       "maxHp": result[7],
                       "gameMode": result[9]})
     return games
+
+
+def all_robots():
+    """
+    Get all robots and their information from the database.
+
+    :return: All robots in database.
+    """
+
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM robot")
+    robots = []
+    results = cursor.fetchall()
+    for result in results:
+        robots.append({"name": result[1],
+                       "description": result[2],
+                       "hp": result[3],
+                       "location": result[4]})
+    return robots
 
