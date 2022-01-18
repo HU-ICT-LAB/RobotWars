@@ -25,7 +25,7 @@ def make_env():
 
 
 env = DummyVecEnv([make_env])
-env = VecVideoRecorder(env, f"../../videos/{run.id}", record_video_trigger=lambda x: x % 2000 == 0, video_length=200)
+#env = VecVideoRecorder(env, f"../../videos/{run.id}", record_video_trigger=lambda x: x % 2000 == 0, video_length=200)
 
 model = PPO(config['policy_type'], env, verbose=1, tensorboard_log=f"../../runs/{run.id}")
 model.learn(
