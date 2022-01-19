@@ -1,3 +1,4 @@
+"""Control the RoboMaster with a controller."""
 from robomaster import robot as robomaster_robot
 from robomaster import blaster
 import pygame
@@ -7,12 +8,14 @@ relative_yaw = 0
 
 
 def handle_gimbal_angle(gimbal_angle):
+    """Update the relative yaw that acts as the z-speed."""
     global relative_yaw
     pitch_angle, yaw_angle, pitch_ground_angle, yaw_ground_angle = gimbal_angle
     relative_yaw = yaw_angle
 
 
-# This code has been created and tested with a PS4 controller, but should in theory work with any controller recognized by your OS
+# This code has been created and tested with a PS4 controller, but should in theory work with any controller
+# recognized by your OS
 pygame.init()
 joystick = pygame.joystick.Joystick(0)
 robot = robomaster_robot.Robot()
@@ -27,8 +30,8 @@ done = False
 while not done:
     try:
         pygame.event.pump()
-        robot.gimbal.drive_speed(-joystick.get_axis(3)*100, joystick.get_axis(2)*300)
-        robot.chassis.drive_speed(x=-joystick.get_axis(1)*2, y=joystick.get_axis(0)*2, z=relative_yaw*5)
+        robot.gimbal.drive_speed(-joystick.get_axis(3) * 100, joystick.get_axis(2) * 300)
+        robot.chassis.drive_speed(x=-joystick.get_axis(1) * 2, y=joystick.get_axis(0) * 2, z=relative_yaw * 5)
         if joystick.get_button(7):
             robot.blaster.fire(blaster.WATER_FIRE)
         elif joystick.get_button(6):
