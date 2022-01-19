@@ -27,7 +27,7 @@ done = False
 while not done:
     try:
         pygame.event.pump()
-        robot.gimbal.drive_speed(-joystick.get_axis(4)*100, joystick.get_axis(3)*300)
+        robot.gimbal.drive_speed(-joystick.get_axis(3)*100, joystick.get_axis(2)*300)
         robot.chassis.drive_speed(x=-joystick.get_axis(1)*2, y=joystick.get_axis(0)*2, z=relative_yaw*5)
         if joystick.get_button(7):
             robot.blaster.fire(blaster.WATER_FIRE)

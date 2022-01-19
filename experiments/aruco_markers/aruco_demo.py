@@ -24,18 +24,21 @@ while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
     frame = srobot.camera.read_cv2_image(strategy='newest')
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    corners, ids, rejected = aruco.detectMarkers(gray, aruco_dict, parameters=aruco_params, cameraMatrix=camera_matrix, distCoeff=camera_dist)
+    corners, ids, rejected = aruco.detectMarkers(gray, aruco_dict, parameters=aruco_params,
+                                                 cameraMatrix=camera_matrix, distCoeff=camera_dist)
     if ids is not None:
         ret = aruco.estimatePoseSingleMarkers(corners, marker_size, camera_matrix, camera_dist)
         for i, (marker_id, marker_corners) in enumerate(zip(ids, corners)):
             rvec, tvec = ret[0][i, 0, :], ret[1][i, 0, :]
-            #aruco.drawDetectedMarkers(frame, corners)
+            # aruco.drawDetectedMarkers(frame, corners)
             aruco.drawAxis(frame, camera_matrix, camera_dist, rvec, tvec, 10)
 
             corners = marker_corners.reshape((4, 2))
             (topLeft, topRight, bottomRight, bottomLeft) = corners
-            cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
-            cv2.putText(frame, f"{(tvec*10).round()}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
+            cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])),
+                        cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
+            cv2.putText(frame, f"{(tvec * 10).round()}", (int(topRight[0]), int(topRight[1])),
+                        cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
 
     cv2.imshow(window_name, frame)
     k = cv2.waitKey(1)

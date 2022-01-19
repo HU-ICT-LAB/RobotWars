@@ -1,7 +1,10 @@
+"""Create YAML file with ArUco Marker location info."""
+
 import yaml
 
 
 def create_room(name: str) -> None:
+    """Ask AruCo marker information and convert to YAML file."""
     print("The aruco code is the number the picture represents, for example 3.\n"
           "The x, y, z coordinates in meters where the picture is, for example [1.2, 3.4, 0.2].\n"
           "The pitch is the horizontal rotation in degrees, for example: 90 which is a rotation to the right.\n"
@@ -31,6 +34,7 @@ def create_room(name: str) -> None:
 
 
 def create_room_direct(name: str, data: dict) -> None:
+    """Convert dictionary to YAML file."""
     with open(f"{name}.yaml", "w") as file:
         yaml.dump(data, file)
 

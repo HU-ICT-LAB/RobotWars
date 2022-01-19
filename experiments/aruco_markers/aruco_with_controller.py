@@ -1,3 +1,4 @@
+"""Control robot with a controller and draw its location on a map."""
 from robomaster import robot as robomaster_robot
 from robomaster import blaster
 import pygame
@@ -10,23 +11,25 @@ from draw_map import create_map
 from robot import Robot
 
 relative_yaw = 0
-border = 20     # size of the border so that the codes drawn on the border can be seen
-                    # The angles are calculated based of the position the robot turned on.
-angle_offset = 0    # This variable is to adjust the robot to the correct position.
+border = 20  # size of the border so that the codes drawn on the border can be seen
+# The angles are calculated based of the position the robot turned on.
+angle_offset = 20  # This variable is to adjust the robot to the correct position.
 
-
-room_name = "test_corner2.yaml"    # TODO
+room_name = "test_corner2.yaml"  # TODO
 with open(room_name, "r") as file:
     room_data = yaml.load(file, Loader=yaml.FullLoader)["aruco_codes"]
 
-# This code has been created and tested with a PS4 controller, but should in theory work with any controller recognized by your OS
+# This code has been created and tested with a PS4 controller, but should in theory work with any controller
+# recognized by your OS
 pygame.init()
 screen = create_map(room_name)  # TODO
 aruco_map = screen.copy()
 joystick = pygame.joystick.Joystick(0)
 robot0 = Robot(location=(10, 10))
 
+
 def handle_gimbal_angle(gimbal_angle):
+    """Calculate the the rotation of the chassis and the turret of the Robomaster."""
     global relative_yaw
     pitch_angle, yaw_angle, pitch_ground_angle, yaw_ground_angle = gimbal_angle
     robot0.turret_yaw = - radians(yaw_ground_angle + angle_offset)
@@ -84,25 +87,32 @@ while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
 
             corners = marker_corners.reshape((4, 2))
             (topLeft, topRight, bottomRight, bottomLeft) = corners
-            cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6, (255, 255, 255))
-            cv2.putText(frame, f"{(tvec*10).round()}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX, .6,
+            cv2.putText(frame, str(marker_id[0]), (int(bottomRight[0]), int(bottomRight[1])), cv2.FONT_HERSHEY_SIMPLEX,
+                        .6, (255, 255, 255))
+            cv2.putText(frame, f"{(tvec * 10).round()}", (int(topRight[0]), int(topRight[1])), cv2.FONT_HERSHEY_SIMPLEX,
+                        .6,
                         (255, 255, 255))
-        calc_coords = [(sum(robot_x_coords)/len(robot_x_coords)) + border, (sum(robot_y_coords)/len(robot_y_coords)) + border]
+        calc_coords = [(sum(robot_x_coords) / len(robot_x_coords)) + border,
+                       (sum(robot_y_coords) / len(robot_y_coords)) + border]
         robot0.location = tuple(calc_coords)
         screen.blit(aruco_map, (0, 0))
         robot0.draw(screen)
-        pygame.draw.circle(screen, [0, 0, 0], calc_coords, 2, 2) # TODO
+        pygame.draw.circle(screen, [0, 0, 0], calc_coords, 2, 2)  # TODO
         pygame.display.update()
+
+    try:
+        pygame.event.pump()
+        robot.gimbal.drive_speed(-joystick.get_axis(3) * 50, joystick.get_axis(2) * 150)
+        robot.chassis.drive_speed(x=-joystick.get_axis(1) * .5, y=joystick.get_axis(0) * .5, z=relative_yaw * 5)
+        if joystick.get_button(0):
+            robot.blaster.fire(blaster.WATER_FIRE)
+        elif joystick.get_button(1):
+            robot.blaster.fire(blaster.INFRARED_FIRE)
+    except KeyboardInterrupt:
+        done = True
     cv2.imshow(window_name, frame)
     k = cv2.waitKey(10)
-
-    pygame.event.pump()
-    robot.gimbal.drive_speed(-joystick.get_axis(3)*50, joystick.get_axis(2)*150)
-    robot.chassis.drive_speed(x=-joystick.get_axis(1)*.5, y=joystick.get_axis(0)*.5, z=relative_yaw*5)
-    if joystick.get_button(0):
-        robot.blaster.fire(blaster.WATER_FIRE)
-    elif joystick.get_button(1):
-        robot.blaster.fire(blaster.INFRARED_FIRE)
+    # time.sleep(0.05)
 
 cv2.destroyAllWindows()
 robot.camera.stop_video_stream()
