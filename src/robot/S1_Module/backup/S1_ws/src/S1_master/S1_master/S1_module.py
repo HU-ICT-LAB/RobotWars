@@ -20,14 +20,13 @@ class S1_driver(Node):
     It also subscribes to the /blast topic to obtain when to fire
     """
 
-
     def __init__(self, sn):
 
         #Initialize the node
         super().__init__('S1_driver')
 
         #Initialize the robot
-        print("Connecting to robomaster...")
+        print("Connecting to robomaster....")
         self.robot = robomaster_robot.Robot()
 
         #Initialize in USB-mode. For router mode, change conn_type to 'sta'
@@ -45,63 +44,55 @@ class S1_driver(Node):
         self.twist_sub = self.create_subscription(geometry_msgs.msg.Twist, '/cmd_vel', self.twistCallback, 10)
 
         #Create an rclpy timer instance that triggers a safety mechanism when no input are received before the timer runs out
-        self.failsafe_timer = self.create_timer(3.0, self.failsafeCallback)
+        #self.failsafe_timer = self.create_timer(3.0, self.failsafeCallback)
 
         #Prevent "unused variable" error
         self.twist_sub
 
-        #Declare parameters for this S1_instance.
+        #Declare parameters for this S1_instance
         """
         self.declare_parameters(
-            namespace='robot',
+            namespare='',
             parameters=[
                 ('conn_type', 'rndis'),
                 ('sn', None),
                 ('linear_max__x', 30.0),
                 ('linear_max__y', 30.0),
-                ('angular_max__x', 30.0),
-                ('angular_max__y', 30.0)
+                ('angular_max__pitch', 30.0),
+                ('angular_max__yaw', 30.0)
             ]
         )
         """
+        self.get_logger().info("After initialization")
 
-
-        
-
-        
 
 
     def failsafeCallback(self):
         """
-        This callback function triggers when the failsafe timer class method runs out, and fully stops the S1's movement.
-        The timer is reset after every succesful command execution, but prevents the system
-        from damaging itself after an unforseen event causes the S1 to drive aimlesly.
+        This callback function triggers when the failsafe timer method runs out, and fully stops the S1's movement.
+        The timer resets after each succeful command execution, but prevents the system from damaging itself after an unforseen event causes the S1 to driver aimlesly
+        """
+
+        #Stop the chassis's movement
+        
+        #stop the gimbal's movement
+
+        #Report the failsafe trigger
+        self.get_logger().info("Failsafe triggered after no commands were received before timer runnout")
+
+
+    def stopMovement__Chassis(self):
+        """
+        Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement 
         """
         
-        #Stop the chassis's movement
-        self.stopChassisMovement()
+        self.robot.chassis.driver_speed(0.0, 0.0)
 
-        #Stop the gimbal's movement
-        self.stopGimballMovement()
-
-        #report the failsafe trigger
-        self.get_logger().info("Failsafe triggered after no commands were received before timer runout")
-
-
-
-    def stopChassisMovement(self):
+    def stopMovement__Gimbal(self):
         """
-        Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement
+        Calling this function will set the linear speed of the S1's gimbal to 0, fully halting its movement 
         """
-        self.robot.chassis.drive_speed(0.0, 0.0)       
-
-    
-    def stopGimballMovement(self):
-        """
-        Calling this function will set the angular speed of the S1's gimbal to 0, fully halting its movement
-        """
-        self.robot.gimbal.drive_speed(0.0, 0.0)       
-    
+        self.robot.gimbal.drive_speed(0.0, 0.0)
 
     def clampValue__float(self, value, max_val, min_val):
         """
@@ -121,8 +112,8 @@ class S1_driver(Node):
         return max(min(max_value, value), min_value)
 
 
-    def twistCallback(self, msg):
 
+    def twistCallback(self, msg):
         #Initialize the guard clause
         if not isinstance(msg, geometry_msgs.msg.Twist):
             raise Exception("'msg' parameter received from callback is not of type 'Twist'. Instead got: '{}'".format(type(msg)))
@@ -141,11 +132,11 @@ class S1_driver(Node):
         self.robot.gimbal.drive_speed(angular_speed[0], angular_speed[1])       
 
         #Instruct the S1's chassis to drive according to the linear commands
-        
+        """
         print("\n============================\Received:\n")
         print("Linear:\n\tx: {}\n\ty: {}".format(linear_speed[0], linear_speed[1]))
         print("Angular:\n\tx: {}\n\ty: {}".format(angular_speed[0], angular_speed[1])) 
-    
+        """
 
 
 def main(args=None):
@@ -155,6 +146,8 @@ def main(args=None):
     
     #Define serial number of robot
     sn = "159CGAC0050R76"
+    
+    print("Main called!")
 
     #Create S1 driver instance
     S1 = S1_driver(sn)
