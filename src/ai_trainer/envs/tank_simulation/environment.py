@@ -1,7 +1,10 @@
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
-import gym
+from pettingzoo import AECEnv
+from pettingzoo.utils import wrappers
+from pettingzoo.utils.to_parallel import parallel_wrapper_fn
 import numpy as np
+import gym
 
 import ai_trainer.envs.tank_simulation.env_obj as env_obj
 import ai_trainer.envs.tank_simulation.tank as tank
@@ -11,21 +14,50 @@ EnvObj = env_obj.EnvObj
 Tank = tank.Tank
 
 
-class TankEnv(gym.Env):
-    metadata = {'render_modes': ['rgb_array']}
+def wrap_env(**kwargs):
+    env = TankEnv(**kwargs)
+    if env.continuous:
+        env = wrappers.ClipOutOfBoundsWrapper(env)
+    else:
+        env = wrappers.AssertOutOfBoundsWrapper(env)
+    env = wrappers.OrderEnforcingWrapper(env)
+    return env
+
+
+parallel_env = parallel_wrapper_fn(wrap_env)
+
+
+class TankEnv(AECEnv):
+    def state(self):
+        pass
+
+    def observe(self, agent):
+        pass
+
+    metadata = {
+        'render_modes': ['rgb_array'],
+        'name': "tanks_v1",
+        'is_parallelizable': True
+    }
     time = 0.
 
-    def __init__(self):
-        self.step_size = 1 / 20  # 20 environment steps represent 1 second
-        self.game_session_length = 30.  # length of one game/episode in seconds
-        self.canvas_size = 700, 700
-        self.arena_size = 5., 5.  # meters
-        self.n_lidar_rays = 20  # number of rays to simulate lidar
-        self.n_tanks = 3
-        self.max_drive_speeds = 2., 2., radians(300), radians(20), radians(20)  # chassis-x,y,z, gimbal-pitch,yaw
+    def __init__(self, step_size: float = 1/20, game_session_length: float = 20, canvas_square_size: int = 700,
+                 arena_square_size: float = 5., n_lidar_rays: int = 200, n_tanks: int = 3, max_drive_speeds: Tuple[float, float, float, float, float] = ()):
+        self.step_size = step_size  # 20 environment steps represent 1 second
+        self.game_session_length = game_session_length  # length of one game/episode in seconds
+        self.canvas_size = canvas_square_size, canvas_square_size
+        self.arena_size = arena_square_size, arena_square_size  # meters
+        self.n_lidar_rays = n_lidar_rays  # number of rays to simulate lidar
+        self.n_tanks = n_tanks
+        self.max_drive_speeds = max_drive_speeds  # chassis-x,y,z, gimbal-pitch,yaw
+
         # x,y,z chassis. pitch,yaw gimbal. fire
         self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
         self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+        # TODO: zo werd het gedaan in de piston
+        self.tank_names = [f"tank_{i}" for i in range(self.n_tanks)]
+        self.action_spaces = dict(zip(self.tank_names, [gym.spaces.Box(low=-1., high=1., shape=(6,)) * self.n_tanks]))
+        self.observation_spaces = dict(zip(self.tank_names, [gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,)) * self.n_tanks]))
 
         self.environment_objects: List[EnvObj] = []
 
