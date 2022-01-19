@@ -1,7 +1,7 @@
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
 from pettingzoo import AECEnv
-from pettingzoo.utils import wrappers
+from pettingzoo.utils import wrappers, agent_selector
 from pettingzoo.utils.to_parallel import parallel_wrapper_fn
 import numpy as np
 import gym
@@ -29,10 +29,12 @@ parallel_env = parallel_wrapper_fn(wrap_env)
 
 class TankEnv(AECEnv):
     def state(self):
-        pass
+        state = self.render()
+        return state
 
-    def observe(self, agent):
-        pass
+    def observe(self, agent_num):
+        observation = self.tanks[agent_num].observe(self)
+        return observation
 
     metadata = {
         'render_modes': ['rgb_array'],
@@ -41,8 +43,9 @@ class TankEnv(AECEnv):
     }
     time = 0.
 
-    def __init__(self, step_size: float = 1/20, game_session_length: float = 20, canvas_square_size: int = 700,
-                 arena_square_size: float = 5., n_lidar_rays: int = 200, n_tanks: int = 3, max_drive_speeds: Tuple[float, float, float, float, float] = ()):
+    def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
+                 arena_square_size: float = 5., n_lidar_rays: int = 200, n_tanks: int = 3,
+                 max_drive_speeds: Tuple[float, float, float, float, float] = ()):
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
         self.canvas_size = canvas_square_size, canvas_square_size
@@ -55,9 +58,11 @@ class TankEnv(AECEnv):
         self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
         self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
         # TODO: zo werd het gedaan in de piston
-        self.tank_names = [f"tank_{i}" for i in range(self.n_tanks)]
-        self.action_spaces = dict(zip(self.tank_names, [gym.spaces.Box(low=-1., high=1., shape=(6,)) * self.n_tanks]))
-        self.observation_spaces = dict(zip(self.tank_names, [gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,)) * self.n_tanks]))
+        # These variables get filled in the reset function.
+        self.tank_names = []
+        self.action_spaces = {}
+        self.observation_spaces = {}
+        self._agent_selector = None
 
         self.environment_objects: List[EnvObj] = []
 
@@ -70,11 +75,17 @@ class TankEnv(AECEnv):
             EnvObj((1., 1.), np.array([2., 2., radians(40)])),
             EnvObj((.4, .6), np.array([3.8, 3.7, radians(10)])),
         ]
-        while len(self.tanks) < self.n_tanks:
-            tank = Tank(np.random.rand(3) * (*self.arena_size, 2*pi), np.random.rand(2) * (2*pi))
+        tank_amount = len(self.tanks)
+        while tank_amount < self.n_tanks:
+            name = f"tank_{tank_amount}"
+            self.tank_names.append(name)
+            tank = Tank(name, np.random.rand(3) * (*self.arena_size, 2 * pi), np.random.rand(2) * (2 * pi))
+            self.action_spaces[name] = gym.spaces.Box(low=-1., high=1., shape=(6,))
+            self.observation_spaces[name] = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
             if not tank.colliding(self):
                 self.environment_objects.append(tank)
-
+            tank_amount = len(self.tanks)
+        self._agent_selector = agent_selector(self.tank_names)
         self.time = 0.
         return self.tanks[0].observe(self)
 
@@ -89,7 +100,7 @@ class TankEnv(AECEnv):
                 canvas = environment_object.render(canvas, self, verbosity)
         return canvas
 
-    def step(self, action):
+    def old_step(self, action): # todo remove when unnecessary
         tanks = self.tanks
         tanks_rewards = {tank: 0 for tank in tanks}
         for i, tank in enumerate(tanks):
@@ -97,20 +108,55 @@ class TankEnv(AECEnv):
                 tanks_rewards = tank.step(self, action, tanks_rewards)
             else:
                 tanks_rewards = tank.step(self, self.action_space.sample(), tanks_rewards)
-                #tanks_rewards = tank.step(self, np.zeros(6), tanks_rewards)
+                # tanks_rewards = tank.step(self, np.zeros(6), tanks_rewards)
         self.time += self.step_size
 
         return tanks[0].observe(self), tanks_rewards[tanks[0]], self.time >= self.game_session_length, {}
 
-    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[Tuple[Optional[EnvObj], np.array]]:
+    def step(self, action):
+        if self.dones[self.agent_selection]:
+            return self._was_done_step(action)
+        tanks_reward = {tank: 0 for tank in self.tank_names}
+        reward = 0
+        tank = self.agent_selection
+        name = tank.name
+        reward = tank.step(self, action, reward)
+
+        self._clear_rewards()
+        self.rewards[tank] = reward
+
+        self.time += self.step_size
+
+        if self.time >= self.game_session_length:
+            for d in self.dones:
+                self.dones[d] = True
+
+        self.agent_selection = self._agent_selector.next()
+        self._cumulative_rewards[tank] = 0
+        self._accumulate_rewards()
+        # return state
+        return tank.observe(self), reward, self.time >= self.game_session_length, {}
+
+        # tanks = self.tanks
+        # tanks_rewards =
+
+
+
+
+    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[
+        Tuple[Optional[EnvObj], np.array]]:
         ox, oy = origin
         arena_width, arena_height = self.arena_size
         # Create set of intersection points, starting with the borders of the arena
         intersection_points = {
-            *([(None, (ox + oy * np.tan(ray_direction, dtype=np.float64), 0))] if cos(ray_direction) > 0 else []),  # top
-            *([(None, (ox + (arena_height - oy) * np.tan(-ray_direction, dtype=np.float64), arena_height))] if cos(ray_direction) <= 0 else []),  # bottom
-            *([(None, (0, oy + ox / np.tan(ray_direction, dtype=np.float64)))] if sin(ray_direction) <= 0 else []),  # left
-            *([(None, (arena_width, oy + (arena_width - ox) / np.tan(-ray_direction, dtype=np.float64)))] if sin(ray_direction) > 0 else []),  # right
+            *([(None, (ox + oy * np.tan(ray_direction, dtype=np.float64), 0))] if cos(ray_direction) > 0 else []),
+            # top
+            *([(None, (ox + (arena_height - oy) * np.tan(-ray_direction, dtype=np.float64), arena_height))] if cos(
+                ray_direction) <= 0 else []),  # bottom
+            *([(None, (0, oy + ox / np.tan(ray_direction, dtype=np.float64)))] if sin(ray_direction) <= 0 else []),
+            # left
+            *([(None, (arena_width, oy + (arena_width - ox) / np.tan(-ray_direction, dtype=np.float64)))] if sin(
+                ray_direction) > 0 else []),  # right
         }
 
         for obj in self.environment_objects:
@@ -124,13 +170,15 @@ class TankEnv(AECEnv):
                 # We can now assume the origin is at 0,0 and rect is point up
                 # rect_coord and ray_direction are compensated for this assumption
 
-                border_x = min(rect_x - rect_width/2, rect_x + rect_width/2, key=abs)
-                border_y = min(rect_y - rect_height/2, rect_y + rect_height/2, key=abs)
+                border_x = min(rect_x - rect_width / 2, rect_x + rect_width / 2, key=abs)
+                border_y = min(rect_y - rect_height / 2, rect_y + rect_height / 2, key=abs)
                 intersection_y = -border_x / tan(direction)
                 intersection_x = -border_y * tan(direction)
-                if rect_y-rect_height/2 < intersection_y < rect_y+rect_height/2 and sin(direction) * border_x > 0:
+                if rect_y - rect_height / 2 < intersection_y < rect_y + rect_height / 2 and sin(
+                        direction) * border_x > 0:
                     intersect_point = np.array([border_x, intersection_y])
-                elif rect_x-rect_width/2 < intersection_x < rect_x+rect_width/2 and -cos(direction) * border_y > 0:
+                elif rect_x - rect_width / 2 < intersection_x < rect_x + rect_width / 2 and -cos(
+                        direction) * border_y > 0:
                     intersect_point = np.array([intersection_x, border_y])
                 else:
                     continue

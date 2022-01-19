@@ -1,0 +1,189 @@
+wandb_version: 1
+
+_current_progress_remaining:
+  desc: null
+  value: 1
+_custom_logger:
+  desc: null
+  value: 'False'
+_episode_num:
+  desc: null
+  value: 0
+_last_episode_starts:
+  desc: null
+  value: '[ True]'
+_last_obs:
+  desc: null
+  value: "[[ 0.          0.          0.          0.          0.          0.\n   0.\
+    \          0.          0.          0.          0.          0.\n   0.         \
+    \ 0.          0.          0.          0.          0.\n   0.          0.      \
+    \    0.          0.          0.          0.\n   0.          0.          0.   \
+    \       0.          0.          0.\n   0.          0.          0.          0.\
+    \          0.          0.\n   0.          0.          0.          0.         \
+    \ 0.          0.\n   0.          0.          0.          0.          0.      \
+    \    0.\n   0.          0.          0.          0.          0.          0.\n \
+    \  0.          0.          0.          0.          0.          0.\n   0.34899637\
+    \  0.5196317   0.93826663  0.8829421   0.1962873   0.21974385\n   0.74420136 \
+    \ 2.4771752   3.967666    5.069774    5.675617    5.725891\n   5.2156754   4.194913\
+    \    2.7635229   1.865799    1.882326    1.714598\n   1.3790331   0.90847886 \
+    \ 0.          0.          0.          0.\n   0.93072456  0.7892694   0.4411405\
+    \   0.02078784 -0.29730475  0.        ]]"
+_last_original_obs:
+  desc: null
+  value: None
+_logger:
+  desc: null
+  value: <stable_baselines3.common.logger.Logger object at 0x00000110B5F573A0>
+_n_updates:
+  desc: null
+  value: 0
+_total_timesteps:
+  desc: null
+  value: 5000000
+_vec_normalize_env:
+  desc: null
+  value: None
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.9
+    code_path: code/src/ai_trainer/training/tank_trainer/tank_trainer.py
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.8
+    start_time: 1642596145
+    t:
+      1:
+      - 1
+      3:
+      - 16
+      4: 3.8.8
+      5: 0.12.9
+      8:
+      - 3
+      - 5
+action_noise:
+  desc: null
+  value: None
+action_space:
+  desc: null
+  value: Box([-1. -1. -1. -1. -1. -1.], [1. 1. 1. 1. 1. 1.], (6,), float32)
+algo:
+  desc: null
+  value: PPO
+batch_size:
+  desc: null
+  value: 64
+clip_range:
+  desc: null
+  value: <function constant_fn.<locals>.func at 0x00000110B5F490D0>
+clip_range_vf:
+  desc: null
+  value: None
+device:
+  desc: null
+  value: cpu
+ent_coef:
+  desc: null
+  value: 0.0
+env:
+  desc: null
+  value: <stable_baselines3.common.vec_env.dummy_vec_env.DummyVecEnv object at 0x00000110946C9700>
+ep_info_buffer:
+  desc: null
+  value: deque([], maxlen=100)
+ep_success_buffer:
+  desc: null
+  value: deque([], maxlen=100)
+eval_env:
+  desc: null
+  value: None
+gae_lambda:
+  desc: null
+  value: 0.95
+gamma:
+  desc: null
+  value: 0.99
+learning_rate:
+  desc: null
+  value: 0.0003
+lr_schedule:
+  desc: null
+  value: <function constant_fn.<locals>.func at 0x00000110B5F49040>
+max_grad_norm:
+  desc: null
+  value: 0.5
+n_envs:
+  desc: null
+  value: 1
+n_epochs:
+  desc: null
+  value: 10
+n_steps:
+  desc: null
+  value: 2048
+num_timesteps:
+  desc: null
+  value: 0
+observation_space:
+  desc: null
+  value: "Box([-1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.\
+    \ -1.\n -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.\n\
+    \ -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.\n -1.\
+    \ -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.\n -1. -1.\
+    \ -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1. -1.], [1. 1. 1.\
+    \ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.\n 1. 1. 1. 1.\
+    \ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.\n 1. 1. 1. 1. 1.\
+    \ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.\n 1. 1. 1. 1. 1. 1.\
+    \ 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1. 1.], (90,), float32)"
+policy:
+  desc: null
+  value: "ActorCriticPolicy(\n  (features_extractor): FlattenExtractor(\n    (flatten):\
+    \ Flatten(start_dim=1, end_dim=-1)\n  )\n  (mlp_extractor): MlpExtractor(\n  \
+    \  (shared_net): Sequential()\n    (policy_net): Sequential(\n      (0): Linear(in_features=90,\
+    \ out_features=64, bias=True)\n      (1): Tanh()\n      (2): Linear(in_features=64,\
+    \ out_features=64, bias=True)\n      (3): Tanh()\n    )\n    (value_net): Sequential(\n\
+    \      (0): Linear(in_features=90, out_features=64, bias=True)\n      (1): Tanh()\n\
+    \      (2): Linear(in_features=64, out_features=64, bias=True)\n      (3): Tanh()\n\
+    \    )\n  )\n  (action_net): Linear(in_features=64, out_features=6, bias=True)\n\
+    \  (value_net): Linear(in_features=64, out_features=1, bias=True)\n)"
+policy_class:
+  desc: null
+  value: <class 'stable_baselines3.common.policies.ActorCriticPolicy'>
+policy_kwargs:
+  desc: null
+  value: '{}'
+policy_type:
+  desc: null
+  value: MlpPolicy
+rollout_buffer:
+  desc: null
+  value: <stable_baselines3.common.buffers.RolloutBuffer object at 0x00000110B5F30160>
+sde_sample_freq:
+  desc: null
+  value: -1
+seed:
+  desc: null
+  value: None
+start_time:
+  desc: null
+  value: 1642596147.2169287
+target_kl:
+  desc: null
+  value: None
+tensorboard_log:
+  desc: null
+  value: ../../runs/3acurel5
+total_timesteps:
+  desc: null
+  value: 5000000
+use_sde:
+  desc: null
+  value: 'False'
+verbose:
+  desc: null
+  value: 1
+vf_coef:
+  desc: null
+  value: 0.5

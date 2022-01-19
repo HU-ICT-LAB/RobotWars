@@ -1,0 +1,24 @@
+{
+    "os": "Windows-10-10.0.19041-SP0",
+    "python": "3.8.8",
+    "heartbeatAt": "2022-01-19T12:42:26.588536",
+    "startedAt": "2022-01-19T12:42:24.943631",
+    "docker": null,
+    "gpu": "GeForce GTX 1050",
+    "gpu_count": 1,
+    "cpu_count": 12,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "D:/Git/RobotWars/src/ai_trainer/training/tank_trainer/tank_trainer.py",
+    "codePath": "src\\ai_trainer\\training\\tank_trainer\\tank_trainer.py",
+    "git": {
+        "remote": "https://github.com/HU-ICT-LAB/RobotWars.git",
+        "commit": "e5456e2b03fe63b3dcb2ca46328a3378456ccd37"
+    },
+    "email": "maxvankemenade@gmail.com",
+    "root": "D:/Git/RobotWars",
+    "host": "LAPTOP-GF9HP0E1",
+    "username": "maxva",
+    "executable": "D:\\Git\\RobotWars\\venv\\Scripts\\python.exe"
+}
