@@ -1,19 +1,31 @@
-import React from 'react';
+import React from "react";
 
 export default function RobotFeed() {
-    return(
-        <div style={styles.robotFeed}>
-            *Insert camera live feed here*
-        </div>
-    )
+  return (
+    <div style={styles.robotFeed}>
+      <h2 style={styles.text}>Live game camera</h2>
+      <iframe
+        style={styles.cam}
+        src="http://192.168.178.11:4747/video"
+        allow="camera;"
+      ></iframe>
+    </div>
+  );
 }
 
 const styles = {
-    robotFeed: {
-        padding: "10px",
-        backgroundColor: "#323232",
-        height: "360px",
-        width: "640px",
-        borderRadius: "10px"
-      },
-}
+  robotFeed: {
+    backgroundColor: "#323232",
+    height: "520px",
+    width: "800px",
+    borderRadius: "10px",
+  },
+  text: {
+    color: "white",
+  },
+  cam: {
+    height: "396px",
+    width: "704px",
+    borderRadius: "10px",
+  },
+};

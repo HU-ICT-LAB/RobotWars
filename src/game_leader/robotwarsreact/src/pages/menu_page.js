@@ -1,16 +1,13 @@
-import React from 'react';
-import RobotFeed from "../components/robot_feed"
-import RobotInfo from "../components/robot_info"
-import Header from "../components/header"
-
+import React from "react";
+import RobotInfo from "../components/robot_info";
+import Header from "../components/header";
 
 export default function MenuPage() {
   return (
     <div style={styles.container}>
-      <Header/>
+      <Header />
       <div style={styles.content}>
-        <RobotInfo/>
-        <RobotFeed/>
+        <RobotInfo />
       </div>
     </div>
   );
@@ -27,4 +24,4 @@ const styles = {
     display: "flex",
     justifyContent: "space-evenly",
   },
-}
+};

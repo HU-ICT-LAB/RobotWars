@@ -1,31 +1,42 @@
-import React from 'react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function NavigationBar() {
-    return (
-        <div style={styles.container}>
-            <button style={styles.button} onClick={()=> window.location = "/"}>Home</button>
-            <button style={styles.button} onClick={()=> window.location = "/create-game"}>Create Game</button>
-            <button style={styles.button} onClick={()=> window.location = "/game-overview"}>Game Overview</button>
-        </div>
-        );
+  const navigate = useNavigate();
+
+  return (
+    <div style={styles.container}>
+      <button style={styles.button} onClick={() => navigate("/")}>
+        Home
+      </button>
+      <button style={styles.button} onClick={() => navigate("/create-game")}>
+        Create Game
+      </button>
+      <button style={styles.button} onClick={() => navigate("/game-overview")}>
+        Game Overview
+      </button>
+    </div>
+  );
 }
 
 const styles = {
-    container: {
-        width: "80%",
-        backgroundColor: "#323232",
-        alignSelf: "center",
-        display: "flex",
-        justifyContent: "space-evenly",
-        padding: "5px",
-        borderRadius: "10px"
-    },
-    button: {
-        width: "150px",
-        height: "30px",
-        backgroundColor: "#0D7377",
-        borderRadius: "10px",
-        borderStyle: "hidden",
-        color: "white"
-    }
-}
+  container: {
+    width: "80%",
+    backgroundColor: "#323232",
+    alignSelf: "center",
+    display: "flex",
+    justifyContent: "space-evenly",
+    padding: "5px",
+    borderRadius: "10px",
+    height: "50px",
+    alignItems: "center",
+  },
+  button: {
+    width: "150px",
+    height: "40px",
+    backgroundColor: "#0D7377",
+    borderRadius: "10px",
+    borderStyle: "hidden",
+    color: "white",
+  },
+};
