@@ -13,7 +13,7 @@ empty = pygame.Color(0, 0, 0, 0)
 
 
 def create_map(file_name) -> pygame.Surface:
-    """Creates a pygame Surface and draws the map on the surface according to the yaml file data."""
+    """Create a pygame Surface and draws the map on the surface according to the yaml file data."""
     screen = pygame.display.set_mode((800, 600))
     screen.fill([255, 255, 255])
     with open(file_name, "r") as file:

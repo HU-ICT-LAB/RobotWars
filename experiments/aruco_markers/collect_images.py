@@ -1,3 +1,4 @@
+"""Collect images for calibration."""
 import cv2
 from robomaster import robot
 
@@ -13,8 +14,9 @@ criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 while cv2.getWindowProperty(window_name, cv2.WND_PROP_VISIBLE) >= 1:
     frame = srobot.camera.read_cv2_image(strategy='newest')
-    gray = cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-    ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH
+                                             + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
     if ret:
         corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
         visual = cv2.drawChessboardCorners(frame.copy(), CHECKERBOARD, corners2, ret)
