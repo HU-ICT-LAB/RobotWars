@@ -135,15 +135,15 @@ dmypy.json
 desktop.ini
 
 # react frontend
-/robotwarsreact/node_modules
-/node_modules
-
-/robotwarsreact/npm-debug.log*
-/robotwarsreact/yarn-debug.log*
-/robotwarsreact/yarn-error.log*
+/src/game_leader/robotwarsreact/node_modules
+/src/game_leader/robotwarsreact/npm-debug.log*
+/src/game_leader/robotwarsreact/yarn-debug.log*
+/src/game_leader/robotwarsreact/yarn-error.log*
 
 # database
-/server/service_account_key.json
+/game_leader/server/service_account_key.json
 
 # rooms for ArUca codes
 /experiments/aruco_markers/*.yaml
+
+
