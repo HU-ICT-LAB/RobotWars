@@ -21,7 +21,7 @@ extras = {
     ],
     "ai_trainer": ["opencv-contrib-python",
                    "PYyaml",
-                   "pygame",
+                   "pygame==2.0.3",
                    ],
     "game_leader": [
         "flask",

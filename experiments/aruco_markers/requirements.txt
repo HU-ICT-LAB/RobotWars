@@ -1,5 +1,0 @@
-opencv-contrib-python
-robomaster
-pygame
-numpy
-pyyaml
