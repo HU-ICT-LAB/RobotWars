@@ -3,7 +3,9 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecVideoRecorder
 import supersuit as ss
 import wandb
 from wandb.integration.sb3 import WandbCallback
-from ai_trainer.envs.tank_simulation.environment import TankEnv
+import ai_trainer.envs.tank_simulation.environment as tank_simulation
+# from pettingzoo.utils.to_parallel import parallel_wrapper_fn
+from pettingzoo.utils.to_parallel import to_parallel
 
 config = {
     'policy_type': 'MlpPolicy',

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Set, Optional
+from typing import List, Tuple, Set, Optional, Dict
 from math import sin, cos, tan, radians, pi
 import functools
 from pettingzoo import AECEnv
@@ -15,14 +15,6 @@ Tank = tank.Tank
 
 
 class TankEnv(AECEnv):
-    def state(self):
-        state = self.render()
-        return state
-
-    def observe(self, agent_num):
-        observation = self.tanks[agent_num].observe(self)
-        return observation
-
     metadata = {
         'render_modes': ['rgb_array'],
         'name': "tanks_v1",
@@ -135,14 +127,7 @@ class TankEnv(AECEnv):
         self.agent_selection = self._agent_selector.next()
 
         self._accumulate_rewards()
-        # return state
-        return tank.observe(self), reward, self.time >= self.game_session_length, {}
-
-        # tanks = self.tanks
-        # tanks_rewards =
-
-
-
+        # return tank.observe(self), reward, self.time >= self.game_session_length, {}
 
     def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[
         Tuple[Optional[EnvObj], np.array]]:
