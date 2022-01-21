@@ -20,10 +20,10 @@ extras = {
         "MyQR",
     ],
     "ai_trainer": [
-        "pettingzoo[butterfly]<=1.5.1",
         "stable-baselines3",
         "gym",
-        "supersuit==2.4.0",
+        "supersuit @ git+ssh://git@github.com/RichardDev01/SuperSuit",
+        "pettingzoo[butterfly]",
         "shapely",
         "wandb",
         "tensorboard",
