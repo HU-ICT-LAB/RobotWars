@@ -142,3 +142,8 @@ desktop.ini
 
 # database
 /game_leader/server/service_account_key.json
+
+# rooms for ArUca codes
+/experiments/aruco_markers/*.yaml
+
+

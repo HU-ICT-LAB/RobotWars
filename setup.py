@@ -19,7 +19,10 @@ extras = {
         "keyboard",
         "MyQR"
     ],
-    "ai_trainer": [],
+    "ai_trainer": ["opencv-contrib-python",
+                   "PYyaml",
+                   "pygame==2.0.3",
+                   ],
     "game_leader": [
         "flask",
         "flask-cors",
