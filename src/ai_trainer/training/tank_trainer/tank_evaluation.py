@@ -7,7 +7,7 @@ from ai_trainer.envs.tank_simulation.environment import TankEnv
 
 env = TankEnv()
 env = ss.frame_stack_v1(env, 3)
-model = PPO.load("../../trained_policies/tank_policy.zip", env=env)
+model = PPO.load("../../trained_policies/28xhr4md/model.zip", env=env)
 
 window_name = "Tank Environment"
 cv2.namedWindow(window_name)

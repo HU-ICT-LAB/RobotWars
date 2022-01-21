@@ -18,13 +18,13 @@ run = wandb.init(
 )
 
 
-def make_env():
-    env = TankEnv()
-    env = ss.frame_stack_v1(env, 3)
-    return env
+env = tank_simulation.TankEnv()
+env = to_parallel(env)
+env = ss.pettingzoo_env_to_vec_env_v1(env)
+env = ss.frame_stack_v1(env, 3)
 
 
-env = DummyVecEnv([make_env])
+#env = DummyVecEnv([make_env])
 #env = VecVideoRecorder(env, f"../../videos/{run.id}", record_video_trigger=lambda x: x % 2000 == 0, video_length=200)
 
 model = PPO(config['policy_type'], env, verbose=1, tensorboard_log=f"../../runs/{run.id}")
@@ -32,6 +32,7 @@ model.learn(
     total_timesteps=config['total_timesteps'],
     callback=WandbCallback(
         gradient_save_freq=100,
+        model_save_freq=100,
         model_save_path=f"../../trained_policies/{run.id}",
         verbose=2
     ))

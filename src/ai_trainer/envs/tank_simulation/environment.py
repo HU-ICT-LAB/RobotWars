@@ -1,8 +1,8 @@
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
+import functools
 from pettingzoo import AECEnv
-from pettingzoo.utils import wrappers, agent_selector
-from pettingzoo.utils.to_parallel import parallel_wrapper_fn
+from pettingzoo.utils import agent_selector
 import numpy as np
 import gym
 
@@ -12,19 +12,6 @@ from ai_trainer.envs.tank_simulation.utils import create_2d_rotation_matrix
 
 EnvObj = env_obj.EnvObj
 Tank = tank.Tank
-
-
-def wrap_env(**kwargs):
-    env = TankEnv(**kwargs)
-    if env.continuous:
-        env = wrappers.ClipOutOfBoundsWrapper(env)
-    else:
-        env = wrappers.AssertOutOfBoundsWrapper(env)
-    env = wrappers.OrderEnforcingWrapper(env)
-    return env
-
-
-parallel_env = parallel_wrapper_fn(wrap_env)
 
 
 class TankEnv(AECEnv):
@@ -41,11 +28,11 @@ class TankEnv(AECEnv):
         'name': "tanks_v1",
         'is_parallelizable': True
     }
-    time = 0.
 
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
                  arena_square_size: float = 5., n_lidar_rays: int = 200, n_tanks: int = 3,
                  max_drive_speeds: Tuple[float, float, float, float, float] = ()):
+        super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
         self.canvas_size = canvas_square_size, canvas_square_size
@@ -54,38 +41,44 @@ class TankEnv(AECEnv):
         self.n_tanks = n_tanks
         self.max_drive_speeds = max_drive_speeds  # chassis-x,y,z, gimbal-pitch,yaw
 
-        # x,y,z chassis. pitch,yaw gimbal. fire
-        self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
-        self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
-        # TODO: zo werd het gedaan in de piston
-        # These variables get filled in the reset function.
-        self.tank_names = []
-        self.action_spaces = {}
-        self.observation_spaces = {}
-        self._agent_selector = None
-
         self.environment_objects: List[EnvObj] = []
+        self.time = 0.
+
+        # TODO: remove single agent
+        # # x,y,z chassis. pitch,yaw gimbal. fire
+        # self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
+        # self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+
+        # Pettingzoo variables
+        self.possible_agents = [f"tanks_{i}" for i in range(self.n_tanks)]
+        self.agent_name_mapping = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+
+        self._action_spaces = {agent: gym.spaces.Box(low=-1., high=1., shape=(6,)) for agent in self.possible_agents}
+        self._observation_spaces = {agent: gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,)) for agent in self.possible_agents}
+
+    @functools.lru_cache(maxsize=None)
+    def observation_space(self, agent):
+        return self._observation_spaces[agent]
+
+    @functools.lru_cache(maxsize=None)
+    def action_space(self, agent):
+        return self._action_spaces[agent]
 
     @property
     def tanks(self) -> List[Tank]:
-        return [x for x in self.environment_objects if isinstance(x, Tank)]  # noqa
+        return [x for x in self.environment_objects if isinstance(x, Tank)]
 
     def reset(self):
         self.environment_objects = [
             EnvObj((1., 1.), np.array([2., 2., radians(40)])),
             EnvObj((.4, .6), np.array([3.8, 3.7, radians(10)])),
         ]
-        tank_amount = len(self.tanks)
-        while tank_amount < self.n_tanks:
-            name = f"tank_{tank_amount}"
-            self.tank_names.append(name)
-            tank = Tank(name, np.random.rand(3) * (*self.arena_size, 2 * pi), np.random.rand(2) * (2 * pi))
-            self.action_spaces[name] = gym.spaces.Box(low=-1., high=1., shape=(6,))
-            self.observation_spaces[name] = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+        # Create tanks
+        while len(self.tanks) < self.n_tanks:
+            tank = Tank(np.random.rand(3) * (*self.arena_size, 2 * pi), np.random.rand(2) * (2 * pi))
             if not tank.colliding(self):
                 self.environment_objects.append(tank)
-            tank_amount = len(self.tanks)
-        self._agent_selector = agent_selector(self.tank_names)
+
         self.time = 0.
         return self.tanks[0].observe(self)
 
@@ -99,6 +92,10 @@ class TankEnv(AECEnv):
             else:
                 canvas = environment_object.render(canvas, self, verbosity)
         return canvas
+
+    def observe(self, agent: str):   # TODO
+        observation = self.tanks[self.agent_name_mapping[agent]].observe(self)
+        return observation
 
     def old_step(self, action): # todo remove when unnecessary
         tanks = self.tanks
@@ -114,16 +111,20 @@ class TankEnv(AECEnv):
         return tanks[0].observe(self), tanks_rewards[tanks[0]], self.time >= self.game_session_length, {}
 
     def step(self, action):
+        agent_id = self.agent_name_mapping[self.agent_selection]
+        tank = self.tanks[agent_id]
         if self.dones[self.agent_selection]:
             return self._was_done_step(action)
-        tanks_reward = {tank: 0 for tank in self.tank_names}
-        reward = 0
-        tank = self.agent_selection
-        name = tank.name
-        reward = tank.step(self, action, reward)
 
-        self._clear_rewards()
-        self.rewards[tank] = reward
+        self._cumulative_rewards[self.agent_selection] = 0
+
+        # stores action of current agent
+        self.state[self.agent_selection] = action
+
+        self.rewards[self.agent_selection] = tank.step(self, action, self._cumulative_rewards[self.agent_selection])
+
+        # self._clear_rewards()
+        # self.rewards[self.agent_selection] = reward
 
         self.time += self.step_size
 
@@ -132,7 +133,7 @@ class TankEnv(AECEnv):
                 self.dones[d] = True
 
         self.agent_selection = self._agent_selector.next()
-        self._cumulative_rewards[tank] = 0
+
         self._accumulate_rewards()
         # return state
         return tank.observe(self), reward, self.time >= self.game_session_length, {}
