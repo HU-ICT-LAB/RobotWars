@@ -22,7 +22,7 @@ extras = {
     "ai_trainer": [
         "stable-baselines3",
         "gym",
-        "supersuit @ git+ssh://git@github.com/RichardDev01/SuperSuit",
+        "supersuit @ git+https://git@github.com/RichardDev01/SuperSuit",
         "pettingzoo[butterfly]",
         "shapely",
         "wandb",
