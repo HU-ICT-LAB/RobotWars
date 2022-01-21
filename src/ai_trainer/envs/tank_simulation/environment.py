@@ -72,6 +72,20 @@ class TankEnv(AECEnv):
                 self.environment_objects.append(tank)
 
         self.time = 0.
+        self.agents = self.possible_agents[:]
+        self.rewards = {agent: 0 for agent in self.agents}
+        self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.dones = {agent: False for agent in self.agents}
+        self.infos = {agent: {} for agent in self.agents}
+        self.state = {agent: None for agent in self.agents}
+        self.observations = {agent: None for agent in self.agents}
+
+        '''
+        Our agent_selector utility allows easy cyclic stepping through the agents list.
+        '''
+        self._agent_selector = agent_selector(self.agents)
+        self.agent_selection = self._agent_selector.next()
+
         return self.tanks[0].observe(self)
 
     def render(self, mode="rgb_array", verbosity: int = 1):
