@@ -15,7 +15,7 @@ export default function GameOverview() {
           setSelectedGame(data[0][0]);
         },
         (error) => {
-          console.log(error);
+          window.alert(error);
         }
       );
   }, []);
