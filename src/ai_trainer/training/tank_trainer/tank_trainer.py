@@ -5,7 +5,9 @@ import wandb
 from wandb.integration.sb3 import WandbCallback
 import ai_trainer.envs.tank_simulation.environment as tank_simulation
 # from pettingzoo.utils.to_parallel import parallel_wrapper_fn
-from pettingzoo.utils.to_parallel import to_parallel
+from pettingzoo.utils import to_parallel
+
+# from pettingzoo.utils import from_parallel
 
 config = {
     'policy_type': 'MlpPolicy',
@@ -23,7 +25,7 @@ run = wandb.init(
 env = tank_simulation.TankEnv()
 env = to_parallel(env)
 env = ss.pettingzoo_env_to_vec_env_v1(env)
-env = ss.frame_stack_v1(env, 3)
+#env = ss.frame_stack_v1(env, 3)
 
 
 #env = DummyVecEnv([make_env])
