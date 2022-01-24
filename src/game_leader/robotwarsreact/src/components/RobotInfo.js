@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import SelectBox from "./SelectBox";
 
 export default function RobotInfo() {
   const [robots, setRobots] = useState([]);
@@ -24,11 +25,7 @@ export default function RobotInfo() {
   return (
     <div style={styles.robotInfo}>
       <h2 style={styles.title}>Robot Information</h2>
-      <select style={styles.select} onChange={handleChange}>
-        {robots?.map((item) => {
-          return <option value={item.name}>{item.name}</option>;
-        })}
-      </select>
+        <SelectBox items={robots} onChange={handleChange}></SelectBox>
       <div style={styles.fields}>
         <text style={styles.field}>
           {"Name: " + (selectedRobot?.name === null ? "" : selectedRobot?.name)}

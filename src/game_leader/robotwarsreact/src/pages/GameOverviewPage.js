@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import RobotFeed from "../components/RobotFeed";
+import SelectBox from "../components/SelectBox";
 
 export default function GameOverviewPage() {
   const [games, setGames] = useState([]);
@@ -30,11 +31,7 @@ export default function GameOverviewPage() {
       <div style={styles.content}>
         <div style={styles.overview}>
           <h2 style={styles.title}>Game information</h2>
-          <select onChange={handleChange} style={styles.select}>
-            {games?.map((item) => {
-              return <option value={item.name}>{item.name}</option>;
-            })}
-          </select>
+          <SelectBox items={games} onChange={handleChange}></SelectBox>
           <text style={styles.field}>
             {"Name: " + (selectedGame?.name === null ? "" : selectedGame?.name)}
           </text>
@@ -103,11 +100,6 @@ const styles = {
     minWidth: "500px",
     display: "flex",
     flexDirection: "column",
-    borderRadius: "10px",
-  },
-  select: {
-    width: "200px",
-    height: "20px",
     borderRadius: "10px",
   },
   field: {
