@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import SelectBox from "./SelectBox";
+import TextLine from "./TextLine";
 
 export default function RobotInfo() {
   const [robots, setRobots] = useState([]);
@@ -14,7 +15,7 @@ export default function RobotInfo() {
           setSelectedRobot(data[0][0]);
         },
         (error) => {
-          window.alert(error);
+          console.log(error);
         }
       );
   }, []);
@@ -27,22 +28,10 @@ export default function RobotInfo() {
       <h2 style={styles.title}>Robot Information</h2>
         <SelectBox items={robots} onChange={handleChange}></SelectBox>
       <div style={styles.fields}>
-        <text style={styles.field}>
-          {"Name: " + (selectedRobot?.name === null ? "" : selectedRobot?.name)}
-        </text>
-        <text style={styles.field}>
-          {"HP: " + (selectedRobot?.hp === null ? "" : selectedRobot?.hp)}
-        </text>
-        <text style={styles.field}>
-          {"Description: " +
-            (selectedRobot?.description === null
-              ? ""
-              : selectedRobot?.description)}
-        </text>
-        <text style={styles.field}>
-          {"Location: " +
-            (selectedRobot?.location === null ? "" : selectedRobot?.location)}
-        </text>
+        <TextLine type={"Name"} value={selectedRobot === null ? "" : selectedRobot.name}/>
+        <TextLine type={"Description"} value={selectedRobot === null ? "" : selectedRobot.description}/>
+        <TextLine type={"HP"} value={selectedRobot === null ? "" : selectedRobot.hp}/>
+        <TextLine type={"Location"} value={selectedRobot === null ? "" : selectedRobot.location}/>
       </div>
     </div>
   );
@@ -54,13 +43,16 @@ const styles = {
     paddingRight: "30px",
     backgroundColor: "#323232",
     height: "500px",
-    width: "55%",
+    maxWidth: "40%",
+    minWidth: "500px",
     display: "flex",
     flexDirection: "column",
     borderRadius: "10px",
   },
   title: {
     color: "white",
+    display: "flex",
+    alignItems: "flex-start",
   },
   select: {
     width: "200px",

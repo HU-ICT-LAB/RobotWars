@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from "react";
 import SelectBox from "./SelectBox";
+import TextLine from "./TextLine";
 
 export default function GameOverview() {
   const [games, setGames] = useState([]);
@@ -14,7 +15,7 @@ export default function GameOverview() {
           setSelectedGame(data[0][0]);
         },
         (error) => {
-          window.alert(error);
+          console.log(error);
         }
       );
   }, []);
@@ -24,48 +25,17 @@ export default function GameOverview() {
   }
   return (
     <div style={styles.overview}>
-    <h2 style={styles.title}>Game information</h2>
-    <SelectBox items={games} onChange={handleChange}></SelectBox>
-    <text style={styles.field}>
-      {"Name: " + (selectedGame?.name === null ? "" : selectedGame?.name)}
-    </text>
-    <text style={styles.field}>
-      {"Description: " +
-        (selectedGame?.description === null
-          ? ""
-          : selectedGame?.description)}
-    </text>
-    <text style={styles.field}>
-      {"Gamemode: " +
-        (selectedGame?.gameMode === null ? "" : selectedGame?.gameMode)}
-    </text>
-    <text style={styles.field}>
-      {"Robot 1 Team: " +
-        (selectedGame?.robot1Team === null
-          ? ""
-          : selectedGame?.robot1Team)}
-    </text>
-    <text style={styles.field}>
-      {"Robot 2 Team: " +
-        (selectedGame?.robot2Team === null
-          ? ""
-          : selectedGame?.robot2Team)}
-    </text>
-    <text style={styles.field}>
-      {"Robot 3 Team: " +
-        (selectedGame?.robot3Team === null
-          ? ""
-          : selectedGame?.robot3Team)}
-    </text>
-    <text style={styles.field}>
-      {"Maximum hp of robots: " +
-        (selectedGame?.maxHp === null ? "" : selectedGame?.maxHp)}
-    </text>
-    <text style={styles.field}>
-      {"Game Time: " +
-        (selectedGame?.gameTime === null ? "" : selectedGame?.gameTime)}
-    </text>
-  </div>
+      <h2 style={styles.title}>Game information</h2>
+      <SelectBox items={games} onChange={handleChange}></SelectBox>
+      <TextLine type={"Name"} value={selectedGame === null ? "" : selectedGame.name} />
+      <TextLine type={"Description"} value={selectedGame === null ? "" : selectedGame.description} />
+      <TextLine type={"Gamemode"} value={selectedGame === null ? "" : selectedGame.gameMode} />
+      <TextLine type={"Robot 1 Team"} value={selectedGame === null ? "" : selectedGame.robot1Team} />
+      <TextLine type={"Robot 2 Team"} value={selectedGame === null ? "" : selectedGame.robot2Team} />
+      <TextLine type={"Robot 3 Team"} value={selectedGame === null ? "" : selectedGame.robot3Team} />
+      <TextLine type={"Maximum hp of robots"} value={selectedGame === null ? "" : selectedGame.maxHp} />
+      <TextLine type={"Game Time"} value={selectedGame === null ? "" : selectedGame.gameTime} />
+    </div>
   );
 }
 
@@ -79,6 +49,10 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     borderRadius: "10px",
+    alignItems: "flex-start",
+  },
+  title: {
+    color: "white",
   },
   field: {
     color: "white",
