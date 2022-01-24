@@ -3,6 +3,7 @@ from math import sin, cos, tan, radians, pi
 import functools
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
+from pettingzoo.utils.conversions import parallel_wrapper_fn
 import numpy as np
 import gym
 
@@ -22,7 +23,7 @@ class TankEnv(AECEnv):
     }
 
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
-                 arena_square_size: float = 5., n_lidar_rays: int = 200, n_tanks: int = 3,
+                 arena_square_size: float = 5., n_lidar_rays: int = 20, n_tanks: int = 3,
                  max_drive_speeds: Tuple[float, float, float, float, float] = ()):
         super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
@@ -39,7 +40,7 @@ class TankEnv(AECEnv):
         # TODO: remove single agent
         # # x,y,z chassis. pitch,yaw gimbal. fire
         # self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
-        # self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+        self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
 
         # Pettingzoo variables
         self.possible_agents = [f"tanks_{i}" for i in range(self.n_tanks)]
@@ -185,3 +186,6 @@ class TankEnv(AECEnv):
                 intersection_points.add((obj, tuple(intersect_point @ create_2d_rotation_matrix(rect_angle) + origin)))
 
         return intersection_points
+
+
+parallel_env = parallel_wrapper_fn(TankEnv)
