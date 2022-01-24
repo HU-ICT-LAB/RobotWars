@@ -26,7 +26,6 @@ extras = {
     "game_leader": [
         "flask",
         "flask-cors",
-        "flask-sqlalchemy"
     ],
     "robot": []
 }

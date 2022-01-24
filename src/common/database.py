@@ -16,7 +16,6 @@ def add_robot(name, modifications):
     """
     Add robot to the database.
 
-    :param database: The database the query needs to be performed in.
     :param name: Name of the robot.
     :param modifications: Short description of the robot it's modifications.
     """
@@ -27,7 +26,6 @@ def add_policy(policy_description, policy_path):
     """
     Add policy to the database.
 
-    :param database: The database the query needs to be performed in.
     :param policy_description: Short description of the policy.
     :param policy_path: The path of where the policy file is stored.
     """

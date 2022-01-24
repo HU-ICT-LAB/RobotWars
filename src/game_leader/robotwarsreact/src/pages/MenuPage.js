@@ -1,15 +1,13 @@
 import React from "react";
-import Header from "../components/header";
-import CreateGame from "../components/create_game";
+import RobotInfo from "../components/RobotInfo";
+import Header from "../components/Header";
 
-export default function CreateGamePage() {
+export default function MenuPage() {
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
-        <Header />
-      </div>
+      <Header />
       <div style={styles.content}>
-        <CreateGame />
+        <RobotInfo />
       </div>
     </div>
   );

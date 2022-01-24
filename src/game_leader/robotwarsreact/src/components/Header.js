@@ -1,6 +1,6 @@
 import React from "react";
-import NavigationBar from "../navigation_bar";
-import logo192 from "../../assets/logo192.png";
+import NavigationBar from "./NavigationBar";
+import logo192 from "../assets/logo192.png";
 
 export default function Header() {
   return (
