@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import Header from "../components/header";
-import RobotFeed from "../components/robot_feed";
+import Header from "../components/Header";
+import RobotFeed from "../components/RobotFeed";
 
 export default function GameOverviewPage() {
   const [games, setGames] = useState([]);

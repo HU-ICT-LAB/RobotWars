@@ -1,6 +1,6 @@
 import React from "react";
-import Header from "../components/header";
-import CreateGame from "../components/create_game";
+import Header from "../components/Header";
+import CreateGame from "../components/CreateGame";
 
 export default function CreateGamePage() {
   return (

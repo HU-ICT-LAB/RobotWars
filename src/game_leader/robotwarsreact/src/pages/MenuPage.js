@@ -1,6 +1,6 @@
 import React from "react";
-import RobotInfo from "../components/robot_info";
-import Header from "../components/header";
+import RobotInfo from "../components/RobotInfo";
+import Header from "../components/Header";
 
 export default function MenuPage() {
   return (
