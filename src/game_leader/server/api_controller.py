@@ -1,5 +1,5 @@
 """All api calls."""
-import mysql.connector as connector
+import mysql.connector.errors as db_errors
 from flask import Flask, jsonify, request
 from flask_cors import cross_origin
 from src.game_leader.server.service import new_game, \
@@ -34,7 +34,7 @@ def get_all_ongoing_games():
     """
     try:
         response = get_active_games()
-    except connector.errors.Error as e:
+    except db_errors.Error as e:
         print("get_all_ongoing_games failed: " + str(e))
         response = {"success": False, "message": str(e)}, 404
     return jsonify(response, 200)
@@ -50,13 +50,13 @@ def get_robots():
     """
     try:
         response = all_robots()
-    except connector.errors.Error as e:
+    except db_errors.Error as e:
         print("get_robots failed: " + str(e))
         response = {"success": False, "message": str(e)}, 404
     return jsonify(response, 200)
 
 
-@app.route("/api/v1/start_robots")
+@app.route("/api/v1/start_robots", methods=["POST"])
 def start_robots():
     """
     Start all robots.
