@@ -10,7 +10,6 @@ export default function SelectBox({ items }) {
   );
 }
 
-
 const style = {
     width: "200px",
     height: "20px",
