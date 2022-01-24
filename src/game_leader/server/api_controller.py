@@ -19,7 +19,8 @@ def create_new_game():
     """
     response = {"success": True}, 200
     if not new_game(request.json):
-        response = {"success": False, "message": "request can't be made"}, 500
+        print("create_new_game failed because the connection with the database cannot be made")
+        response = {"success": False, "message": "Connection with database cannot be made"}, 500
     return jsonify(response)
 
 
@@ -34,6 +35,7 @@ def get_all_ongoing_games():
     try:
         response = get_active_games()
     except connector.errors.Error as e:
+        print("get_all_ongoing_games failed: " + str(e))
         response = {"success": False, "message": str(e)}, 404
     return jsonify(response, 200)
 
@@ -49,6 +51,7 @@ def get_robots():
     try:
         response = all_robots()
     except connector.errors.Error as e:
+        print("get_robots failed: " + str(e))
         response = {"success": False, "message": str(e)}, 404
     return jsonify(response, 200)
 
