@@ -37,25 +37,16 @@ class TankEnv(AECEnv):
         self.environment_objects: List[EnvObj] = []
         self.time = 0.
 
-        # TODO: remove single agent
-        # # x,y,z chassis. pitch,yaw gimbal. fire
-        # self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
-        # self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
-
         # Pettingzoo variables
         self.possible_agents = [f"tanks_{i}" for i in range(self.n_tanks)]
         self.agent_name_mapping = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+        self._agent_selector = agent_selector(self.possible_agents)
 
-        self._action_spaces = {agent: gym.spaces.Box(low=-1., high=1., shape=(6,)) for agent in self.possible_agents}
-        self._observation_spaces = {agent: gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,)) for agent in self.possible_agents}
-
-    @functools.lru_cache(maxsize=None)
     def observation_space(self, agent):
-        return self._observation_spaces[agent]
+        return gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
 
-    @functools.lru_cache(maxsize=None)
     def action_space(self, agent):
-        return self._action_spaces[agent]
+        return gym.spaces.Box(low=-1., high=1., shape=(6,))
 
     @property
     def tanks(self) -> List[Tank]:
@@ -84,7 +75,7 @@ class TankEnv(AECEnv):
         '''
         Our agent_selector utility allows easy cyclic stepping through the agents list.
         '''
-        self._agent_selector = agent_selector(self.agents)
+        self._agent_selector.reinit(self.agents)
         self.agent_selection = self._agent_selector.next()
 
         return self.tanks[0].observe(self)
@@ -118,17 +109,18 @@ class TankEnv(AECEnv):
         return tanks[0].observe(self), tanks_rewards[tanks[0]], self.time >= self.game_session_length, {}
 
     def step(self, action):
+        if self.dones[self.agent_selection]:
+            self._was_done_step(None)
+            return None
         agent_id = self.agent_name_mapping[self.agent_selection]
         tank = self.tanks[agent_id]
-        if self.dones[self.agent_selection]:
-            return self._was_done_step(action)
 
         self._cumulative_rewards[self.agent_selection] = 0
 
         # stores action of current agent
         self.state[self.agent_selection] = action
 
-        self.rewards[self.agent_selection] = tank.step(self, action, self._cumulative_rewards[self.agent_selection])
+        tank.step(self, action)
 
         # self._clear_rewards()
         # self.rewards[self.agent_selection] = reward
@@ -136,16 +128,15 @@ class TankEnv(AECEnv):
         self.time += self.step_size
 
         if self.time >= self.game_session_length:
-            for d in self.dones:
-                self.dones[d] = True
+            self.done = True
+            self.dones = {agent: True for agent in self.agents}
 
         self.agent_selection = self._agent_selector.next()
 
         self._accumulate_rewards()
         # return tank.observe(self), reward, self.time >= self.game_session_length, {}
 
-    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[
-        Tuple[Optional[EnvObj], np.array]]:
+    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[Tuple[Optional[EnvObj], np.array]]:
         ox, oy = origin
         arena_width, arena_height = self.arena_size
         # Create set of intersection points, starting with the borders of the arena

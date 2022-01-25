@@ -33,7 +33,7 @@ class Tank(EnvObj):
         self.turret_temperature = 0
         self.max_temperature = 10
 
-    def step(self, tank_env: "environment.TankEnv", action, tanks_rewards: Dict['Tank', float]) -> Dict['Tank', float]:
+    def step(self, tank_env: "environment.TankEnv", action) -> None:
         x, y, z, pitch, yaw, fire = action
         max_x, max_y, max_z, max_yaw, max_pitch = tank_env.max_drive_speeds
         self.gimbal_position += np.array([pitch, yaw])
@@ -60,10 +60,8 @@ class Tank(EnvObj):
             if len(hits) > 0:
                 obj, collision_point = closest_collision(origin, hits)
                 if isinstance(obj, Tank):
-                    tanks_rewards[self] += 1
-                    tanks_rewards[obj] -= 1
-
-        return tanks_rewards
+                    tank_env.rewards[self.agent_name] += 1
+                    tank_env.rewards[obj.agent_name] -= 1
 
     def simulate_lidar(self, tank_env: "environment.TankEnv") -> np.array:
         t_x, t_y, t_z = self.rect_position

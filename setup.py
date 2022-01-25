@@ -53,7 +53,7 @@ setuptools.setup(
     packages=setuptools.find_packages('src'),
     install_requires=install_requires,
     extras_require=extras,
-    python_requires='>=3.6.6, <=3.8.9',
+    python_requires='>=3.6.6, <3.9',
     keywords=['robomaster', 'robomaster s1', 'lasergame', 's1', 'autonomous', 'reinforcement learning', 'dji'],
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
