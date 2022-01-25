@@ -40,7 +40,7 @@ class TankEnv(AECEnv):
         # TODO: remove single agent
         # # x,y,z chassis. pitch,yaw gimbal. fire
         # self.action_space = gym.spaces.Box(low=-1., high=1., shape=(6,))
-        self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+        # self.observation_space = gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
 
         # Pettingzoo variables
         self.possible_agents = [f"tanks_{i}" for i in range(self.n_tanks)]
