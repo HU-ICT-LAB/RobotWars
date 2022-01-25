@@ -3,13 +3,19 @@ import time
 from src.common.database import connect, perform_write_query
 import mysql.connector.errors as db_errors
 
-while True:
-    try:
-        db = connect()
-        break
-    except db_errors.Error as e:
-        print(str(e) + "\nretry in 5 seconds...")
-        time.sleep(5)
+db = ""
+
+
+def make_database_connection():
+    """Make the database connection for the service layer."""
+    global db
+    while True:
+        try:
+            db = connect()
+            break
+        except db_errors.Error as e:
+            print(str(e) + "\nretry in 5 seconds...")
+            time.sleep(5)
 
 
 def new_game(game_information):
