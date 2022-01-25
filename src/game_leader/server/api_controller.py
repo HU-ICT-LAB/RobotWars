@@ -3,7 +3,7 @@ import mysql.connector.errors as db_errors
 from flask import Flask, jsonify, request
 from flask_cors import cross_origin
 from src.game_leader.server.service import new_game, \
-    get_active_games, all_robots
+    get_active_games, all_robots, make_database_connection
 
 
 app = Flask(__name__)
@@ -68,3 +68,4 @@ def start_robots():
 
 if __name__ == "__main__":
     app.run(debug=True)
+    make_database_connection()

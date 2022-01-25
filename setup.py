@@ -26,8 +26,11 @@ extras = {
     "game_leader": [
         "flask",
         "flask-cors",
+        "requests"
     ],
-    "robot": []
+    "robot": [
+        "flask-cors"
+    ]
 }
 # Overarching requirements
 extras['all'] = list(chain.from_iterable(extras.values()))

@@ -1,9 +1,15 @@
 """All service calls."""
+import os
 import time
-from src.common.database import connect, perform_write_query
+
 import mysql.connector.errors as db_errors
 
+from src.common.database import connect, perform_write_query
+
 db = ""
+robot1Ip = os.environ.get("ROBOT1IP")
+robot2Ip = os.environ.get("ROBOT2IP")
+robot3Ip = os.environ.get("ROBOT3IP")
 
 
 def make_database_connection():
