@@ -7,7 +7,7 @@ import ai_trainer.envs.tank_simulation.environment as tank_simulation
 
 config = {
     'policy_type': 'MlpPolicy',
-    'total_timesteps': 5000000,
+    'total_timesteps': 999999999999999999,
 }
 run = wandb.init(
     project='Tank',
@@ -18,7 +18,7 @@ run = wandb.init(
 )
 
 env = tank_simulation.parallel_env()
-#env = ss.frame_stack_v1(env, 3)
+env = ss.frame_stack_v1(env, 5)
 env = ss.pettingzoo_env_to_vec_env_v1(env)
 if os.name != 'nt':
     env = ss.concat_vec_envs_v1(env, 8, num_cpus=4, base_class='stable_baselines3')

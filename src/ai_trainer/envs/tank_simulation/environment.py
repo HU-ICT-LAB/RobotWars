@@ -16,14 +16,14 @@ Tank = tank.Tank
 
 class TankEnv(AECEnv):
     metadata = {
-        'render_modes': ['rgb_array'],
+        'render.modes': ['rgb_array'],
         'name': "tanks_v1",
         'is_parallelizable': True
     }
 
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
                  arena_square_size: float = 5., n_lidar_rays: int = 20, n_tanks: int = 3,
-                 max_drive_speeds: Tuple[float, float, float, float, float] = (2., 2., radians(300), radians(20), radians(20))):
+                 max_drive_speeds: Tuple[float, float, float, float, float] = (2., 2., radians(300), radians(800), radians(800))):
         super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
@@ -42,7 +42,7 @@ class TankEnv(AECEnv):
         self._agent_selector = agent_selector(self.possible_agents)
 
     def observation_space(self, agent):
-        return gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 10,))
+        return gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 11,))
 
     def action_space(self, agent):
         return gym.spaces.Box(low=-1., high=1., shape=(6,))

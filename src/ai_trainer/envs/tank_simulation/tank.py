@@ -37,7 +37,8 @@ class Tank(EnvObj):
     def step(self, tank_env: "environment.TankEnv", action) -> None:
         x, y, z, pitch, yaw, fire = action
         max_x, max_y, max_z, max_yaw, max_pitch = tank_env.max_drive_speeds
-        self.gimbal_position += np.array([pitch, yaw])
+        self.gimbal_position += np.array([pitch, yaw]) * np.array([max_pitch, max_yaw]) * tank_env.step_size
+        self.gimbal_position[1] = min(max(self.gimbal_position[1], -1.5 * pi), 1.5 * pi)  # gimabl can't rotate more than 270 degrees
         # Collision
         new_pos = self.rect_position + np.array([x, y, z]) * np.array([max_x, max_y, max_z]) * tank_env.step_size
         new_pos[0] = min(max(new_pos[0], .1), tank_env.arena_size[0]-.1)
@@ -110,7 +111,10 @@ class Tank(EnvObj):
         # turret temperature
         temperature = np.array([self.turret_temperature / self.max_temperature])
 
-        return np.concatenate([lidar_output, bbox_center, bbox_size, location, angles, temperature])
+        # round time
+        round_time = np.array([tank_env.time / tank_env.game_session_length])
+
+        return np.concatenate([lidar_output, bbox_center, bbox_size, location, angles, temperature, round_time])
 
     def render(self, canvas: np.array, env: 'environment.TankEnv', verbosity: int = 1, color=(255, 255, 255)) -> np.array:
         rect_x, rect_y, rect_z = self.rect_position
