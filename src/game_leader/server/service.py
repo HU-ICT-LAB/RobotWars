@@ -35,9 +35,11 @@ def new_game(game_information):
     :param: information of the new game.
     :return: all robot responses.
     """
-    response1 = requests.post(robot1Ip+"/api/v1/start")
-    response2 = requests.post(robot2Ip+"/api/v1/start")
-    response3 = requests.post(robot3Ip+"/api/v1/start")
+    response1 = requests.post(robot1Ip + "/api/v1/start")
+
+    response2 = requests.post(robot2Ip + "/api/v1/start")
+
+    response3 = requests.post(robot3Ip + "/api/v1/start")
 
     game_time = game_information["gameTime"]
     perform_write_query("INSERT INTO game_session ("
@@ -72,9 +74,9 @@ def game_timer(game_time):
 
 def stop_all_robots():
     """Send requests to all robots to stop."""
-    response1 = requests.post(robot1Ip+"/api/v1/stop")
-    response2 = requests.post(robot2Ip+"/api/v1/stop")
-    response3 = requests.post(robot3Ip+"/api/v1/stop")
+    response1 = requests.post(robot1Ip + "/api/v1/stop")
+    response2 = requests.post(robot2Ip + "/api/v1/stop")
+    response3 = requests.post(robot3Ip + "/api/v1/stop")
 
     return {"robot_1_response": response1,
             "robot_2_response": response2,

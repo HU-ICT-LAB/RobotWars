@@ -24,7 +24,7 @@ def create_new_game():
     except db_errors.Error:
         print("create_new_game failed because the connection with the database cannot be made")
         response = {"success": False, "message": "Connection with database cannot be made"}, 409
-    except Exception as e:
+    except Exception as e:  # noqa: B902
         response = {"success": False, "message": str(e)}, 404
 
     return jsonify(response)
@@ -75,7 +75,7 @@ def stop_robots():
 
     try:
         stop_all_robots()
-    except Exception as e:
+    except Exception as e:  # noqa: B902
         response = {"success": True, "message": str(e)}, 404
 
     return jsonify(response)
