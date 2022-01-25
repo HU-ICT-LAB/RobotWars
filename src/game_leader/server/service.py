@@ -29,6 +29,7 @@ def make_database_connection():
 def new_game(game_information):
     """
     Create a new game and writes it to the database.
+
     Send "start_game" post requests to all of the robots.
 
     :param: information of the new game.
@@ -70,6 +71,7 @@ def game_timer(game_time):
 
 
 def stop_all_robots():
+    """Send requests to all robots to stop."""
     response1 = requests.post(robot1Ip+"/api/v1/stop")
     response2 = requests.post(robot2Ip+"/api/v1/stop")
     response3 = requests.post(robot3Ip+"/api/v1/stop")

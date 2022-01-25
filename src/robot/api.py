@@ -63,7 +63,7 @@ def update_policy():
 
 def connect():
     """Connect to the database."""
-    return connector.connect(host=os.environ.get("DB_URL"),
+    return connector.connect(host=os.environ.get("DB_URL"),  # Set these variables in your configuration.
                              user=os.environ.get("DB_USER"),
                              password=os.environ.get("DB_PASSWORD"),
                              database=os.environ.get("DB_NAME"))
