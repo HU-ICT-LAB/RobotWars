@@ -1,13 +1,15 @@
 """All service calls."""
 import os
 import time
+import requests
+import threading
 
 import mysql.connector.errors as db_errors
 
 from src.common.database import connect, perform_write_query
 
 db = ""
-robot1Ip = os.environ.get("ROBOT1IP")
+robot1Ip = os.environ.get("ROBOT1IP")  # Set these variables in your configuration.
 robot2Ip = os.environ.get("ROBOT2IP")
 robot3Ip = os.environ.get("ROBOT3IP")
 
@@ -26,11 +28,17 @@ def make_database_connection():
 
 def new_game(game_information):
     """
-    Create a new game.
+    Create a new game and writes it to the database.
+    Send "start_game" post requests to all of the robots.
 
     :param: information of the new game.
-    :return: true if game is created.
+    :return: all robot responses.
     """
+    response1 = requests.post(robot1Ip+"/api/v1/start")
+    response2 = requests.post(robot2Ip+"/api/v1/start")
+    response3 = requests.post(robot3Ip+"/api/v1/start")
+
+    game_time = game_information["gameTime"]
     perform_write_query("INSERT INTO game_session ("
                         "game_name, description, game_mode, "
                         "robot_1_team, robot_2_team, robot_3_team, "
@@ -45,7 +53,30 @@ def new_game(game_information):
                          game_information["gameHP"],
                          game_information["gameTime"],
                          True), db)
-    return True
+
+    threading.Thread(target=game_timer, args=(game_time, ))
+
+    return {"robot_1_response": response1,
+            "robot_2_response": response2,
+            "robot_3_response": response3}
+
+
+def game_timer(game_time):
+    """Start a timer for the game."""
+    start = time.time()
+    while time.time() - start < game_time:
+        time.sleep(1)
+    stop_all_robots()
+
+
+def stop_all_robots():
+    response1 = requests.post(robot1Ip+"/api/v1/stop")
+    response2 = requests.post(robot2Ip+"/api/v1/stop")
+    response3 = requests.post(robot3Ip+"/api/v1/stop")
+
+    return {"robot_1_response": response1,
+            "robot_2_response": response2,
+            "robot_3_response": response3}
 
 
 def get_active_games():
@@ -70,7 +101,7 @@ def get_active_games():
     return games
 
 
-def all_robots():
+def get_all_robots():
     """
     Get all robots and their information from the database.
 
