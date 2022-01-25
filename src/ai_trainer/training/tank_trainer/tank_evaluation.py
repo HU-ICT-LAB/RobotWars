@@ -1,24 +1,24 @@
-import numpy as np
 from cv2 import cv2
 from stable_baselines3 import PPO
-import supersuit as ss
 
-from ai_trainer.envs.tank_simulation.environment import TankEnv
+import ai_trainer.envs.tank_simulation.environment as tank_simulation
 
-env = TankEnv()
-env = ss.frame_stack_v1(env, 3)
-model = PPO.load("../../trained_policies/28xhr4md/model.zip", env=env)
+policy_file = "../../trained_policies/np43hzo3/model.zip"
+env = tank_simulation.TankEnv()
+model = PPO.load(policy_file)
 
 window_name = "Tank Environment"
 cv2.namedWindow(window_name)
-obs = env.reset()
-while cv2.getWindowProperty(window_name, 0) >= 0:
-    # action = env.action_space.sample()
-    action = model.predict(obs)[0]
-    # action = np.array([0., 0., 0.1, 0., 0.1, 1.])
-    obs, reward, done, info = env.step(action)
+env.reset()
+for agent in env.agent_iter():
+    obs, reward, done, info = env.last()
+    act = model.predict(obs, deterministic=True)[0] if not done else None
+    env.step(act)
     cv2.imshow(window_name, env.render())
     cv2.waitKey(round(env.step_size * 1000))
-    if done:
-        obs = env.reset()
+    if not cv2.getWindowProperty(window_name, 0) >= 0:
+        break
+    if all(env.dones.values()):
+        env.reset()
+        model = PPO.load(policy_file)
 env.close()
