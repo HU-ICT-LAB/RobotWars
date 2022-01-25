@@ -81,7 +81,7 @@ class TankEnv(AECEnv):
         self._agent_selector.reinit(self.agents)
         self.agent_selection = self._agent_selector.next()
 
-        return self.tanks[0].observe(self)
+        # return self.tanks[0].observe(self)
 
     def render(self, mode="rgb_array", verbosity: int = 1):
         canvas_width, canvas_height = self.canvas_size
