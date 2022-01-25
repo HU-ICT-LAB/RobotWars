@@ -1,6 +1,5 @@
-from typing import List, Tuple, Set, Optional, Dict
+from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
-import functools
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils.conversions import parallel_wrapper_fn
@@ -81,35 +80,16 @@ class TankEnv(AECEnv):
         self._agent_selector.reinit(self.agents)
         self.agent_selection = self._agent_selector.next()
 
-        # return self.tanks[0].observe(self)
-
     def render(self, mode="rgb_array", verbosity: int = 1):
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
-            if environment_object is self.tanks[0]:
-                environment_object: Tank
-                canvas = environment_object.render(canvas, self, verbosity, color=(1, .2, .2))
-            else:
-                canvas = environment_object.render(canvas, self, verbosity)
+            canvas = environment_object.render(canvas, self, verbosity)
         return canvas
 
-    def observe(self, agent: str):   # TODO
+    def observe(self, agent: str):
         observation = self.tanks[self.agent_name_mapping[agent]].observe(self)
         return observation
-
-    def old_step(self, action):     # todo remove when unnecessary
-        tanks = self.tanks
-        tanks_rewards = {tank: 0 for tank in tanks}
-        for i, tank in enumerate(tanks):
-            if i == 0:
-                tanks_rewards = tank.step(self, action, tanks_rewards)
-            else:
-                tanks_rewards = tank.step(self, self.action_space.sample(), tanks_rewards)
-                # tanks_rewards = tank.step(self, np.zeros(6), tanks_rewards)
-        self.time += self.step_size
-
-        return tanks[0].observe(self), tanks_rewards[tanks[0]], self.time >= self.game_session_length, {}
 
     def step(self, action):
         if self.dones[self.agent_selection]:
@@ -125,9 +105,6 @@ class TankEnv(AECEnv):
 
         tank.step(self, action)
 
-        # self._clear_rewards()
-        # self.rewards[self.agent_selection] = reward
-
         self.time += self.step_size
 
         if self.time >= self.game_session_length:
@@ -137,7 +114,6 @@ class TankEnv(AECEnv):
         self.agent_selection = self._agent_selector.next()
 
         self._accumulate_rewards()
-        # return tank.observe(self), reward, self.time >= self.game_session_length, {}
 
     def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[Tuple[Optional[EnvObj], np.array]]:
         ox, oy = origin
