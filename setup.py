@@ -29,6 +29,7 @@ extras = {
         "requests"
     ],
     "robot": [
+        "flask",
         "flask-cors"
     ]
 }
