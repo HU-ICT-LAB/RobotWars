@@ -24,7 +24,7 @@ class TankEnv(AECEnv):
 
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
                  arena_square_size: float = 5., n_lidar_rays: int = 20, n_tanks: int = 3,
-                 max_drive_speeds: Tuple[float, float, float, float, float] = ()):
+                 max_drive_speeds: Tuple[float, float, float, float, float] = (2., 2., radians(300), radians(20), radians(20))):
         super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
@@ -58,15 +58,18 @@ class TankEnv(AECEnv):
             EnvObj((.4, .6), np.array([3.8, 3.7, radians(10)])),
         ]
         # Create tanks
-        while len(self.tanks) < self.n_tanks:
-            tank = Tank(np.random.rand(3) * (*self.arena_size, 2 * pi), np.random.rand(2) * (2 * pi))
-            if not tank.colliding(self):
-                self.environment_objects.append(tank)
+        for agent in self.possible_agents:
+            while True:
+                tank = Tank(agent, np.random.rand(3) * (*self.arena_size, 2 * pi), np.random.rand(2) * (2 * pi))
+                if not tank.colliding(self):
+                    self.environment_objects.append(tank)
+                    break
 
         self.time = 0.
         self.agents = self.possible_agents[:]
         self.rewards = {agent: 0 for agent in self.agents}
         self._cumulative_rewards = {agent: 0 for agent in self.agents}
+        self.done = False
         self.dones = {agent: False for agent in self.agents}
         self.infos = {agent: {} for agent in self.agents}
         self.state = {agent: None for agent in self.agents}
@@ -95,7 +98,7 @@ class TankEnv(AECEnv):
         observation = self.tanks[self.agent_name_mapping[agent]].observe(self)
         return observation
 
-    def old_step(self, action): # todo remove when unnecessary
+    def old_step(self, action):     # todo remove when unnecessary
         tanks = self.tanks
         tanks_rewards = {tank: 0 for tank in tanks}
         for i, tank in enumerate(tanks):

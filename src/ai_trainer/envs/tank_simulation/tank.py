@@ -23,11 +23,12 @@ class Tank(EnvObj):
     ])
     fov = radians(70), radians(70)  # TODO: Find more realistic numbers
 
-    def __init__(self, chassis_position: np.array, gimbal_position: np.array):
+    def __init__(self, agent_name: str, chassis_position: np.array, gimbal_position: np.array):
         super().__init__(
             rect_shape=(.24, .32),
             rect_position=chassis_position
         )
+        self.agent_name = agent_name
         self.gimbal_position = gimbal_position
         self.fire = False
         self.turret_temperature = 0
