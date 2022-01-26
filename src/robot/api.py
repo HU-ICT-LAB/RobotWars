@@ -2,12 +2,14 @@
 import os
 import mysql.connector as connector
 
+from flask_cors import cross_origin
 from flask import Flask, jsonify
 
 app = Flask(__name__)
 
 
 @app.route("/api/v1/information")
+@cross_origin()
 def get_robot_information():
     """
     Get name, description, hp of the robot.
@@ -17,7 +19,20 @@ def get_robot_information():
     return jsonify({"name": "test", "description": "test", "hp": 50})
 
 
-@app.route("/api/v1/stop-playing")
+@app.route("/api/v1/start")
+@cross_origin()
+def start_robot():
+    """
+    Stop the robot.
+
+    :return: robot stopped if successfully stopped
+    """
+    # ToDo Start robot.
+    return jsonify("Robot stopped")
+
+
+@app.route("/api/v1/stop")
+@cross_origin()
 def stop_robot():
     """
     Stop the robot.
@@ -29,6 +44,7 @@ def stop_robot():
 
 
 @app.route("/api/v1/update-policy")
+@cross_origin()
 def update_policy():
     """
     Tells the robot to retrieve a new policy from the database.
@@ -47,7 +63,7 @@ def update_policy():
 
 def connect():
     """Connect to the database."""
-    return connector.connect(host=os.environ.get("DB_URL"),
+    return connector.connect(host=os.environ.get("DB_URL"),  # Set these variables in your configuration.
                              user=os.environ.get("DB_USER"),
                              password=os.environ.get("DB_PASSWORD"),
                              database=os.environ.get("DB_NAME"))
