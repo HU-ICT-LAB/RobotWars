@@ -1,3 +1,4 @@
+"""Start tank training simulation."""
 import os
 from stable_baselines3 import PPO
 import supersuit as ss
@@ -23,8 +24,7 @@ env = ss.pettingzoo_env_to_vec_env_v1(env)
 if os.name != 'nt':
     env = ss.concat_vec_envs_v1(env, 8, num_cpus=4, base_class='stable_baselines3')
 
-
-#env = VecVideoRecorder(env, f"../../videos/{run.id}", record_video_trigger=lambda x: x % 2000 == 0, video_length=200)
+# env = VecVideoRecorder(env, f"../../videos/{run.id}", record_video_trigger=lambda x: x % 2000 == 0, video_length=200)
 
 model = PPO(config['policy_type'], env, verbose=3, tensorboard_log=f"../../runs/{run.id}")
 model.learn(

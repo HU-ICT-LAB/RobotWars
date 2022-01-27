@@ -1,3 +1,4 @@
+"""Visualise the model trained for multi agent tank trainer."""
 from cv2 import cv2
 from stable_baselines3 import PPO
 import supersuit as ss
@@ -5,7 +6,7 @@ import supersuit as ss
 import ai_trainer.envs.tank_simulation.environment as tank_simulation
 
 policy_file = "../../trained_policies/1vq6y4sp/model.zip"
-env = tank_simulation.TankEnv(step_size=1/30)
+env = tank_simulation.TankEnv(step_size=1 / 30)
 env = ss.frame_stack_v1(env, 5)
 model = PPO.load(policy_file)
 

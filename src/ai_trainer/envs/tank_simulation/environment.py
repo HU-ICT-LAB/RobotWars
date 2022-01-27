@@ -1,3 +1,4 @@
+"""Create custom environment for tank simulation."""
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
 from pettingzoo import AECEnv
@@ -15,6 +16,8 @@ Tank = tank.Tank
 
 
 class TankEnv(AECEnv):
+    """Custom tank environment."""
+
     metadata = {
         'render.modes': ['rgb_array'],
         'name': "tanks_v1",
@@ -23,7 +26,8 @@ class TankEnv(AECEnv):
 
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
                  arena_square_size: float = 5., n_lidar_rays: int = 20, n_tanks: int = 3,
-                 max_drive_speeds: Tuple[float, float, float, float, float] = (2., 2., radians(300), radians(800), radians(800))):
+                 max_drive_speeds: Tuple[float, float, float, float, float] =
+                 (2., 2., radians(300), radians(800), radians(800))):
         super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
@@ -41,17 +45,35 @@ class TankEnv(AECEnv):
         self.agent_name_mapping = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
         self._agent_selector = agent_selector(self.possible_agents)
 
-    def observation_space(self, agent):
+    def observation_space(self, agent) -> gym.spaces.Box:
+        """
+        Give observation.
+
+        :param agent: The tank you want an observation space from.
+        :return: gym box of the observation space.
+        """
         return gym.spaces.Box(low=-1., high=1., shape=(self.n_lidar_rays + 11,))
 
-    def action_space(self, agent):
+    def action_space(self, agent) -> gym.spaces.Box:
+        """
+        Return the action space of the given agent.
+
+        :param agent: The tank you want an action space from.
+        :return: gym box of the action space.
+        """
         return gym.spaces.Box(low=-1., high=1., shape=(6,))
 
     @property
     def tanks(self) -> List[Tank]:
+        """
+        Show tanks in the environment.
+
+        :return: List of tanks.
+        """
         return [x for x in self.environment_objects if isinstance(x, Tank)]
 
-    def reset(self):
+    def reset(self) -> None:
+        """Set environment to default state."""
         self.environment_objects = [
             EnvObj((1., 1.), np.array([2., 2., radians(40)])),
             EnvObj((.4, .6), np.array([3.8, 3.7, radians(10)])),
@@ -74,24 +96,40 @@ class TankEnv(AECEnv):
         self.state = {agent: None for agent in self.agents}
         self.observations = {agent: None for agent in self.agents}
 
-        '''
-        Our agent_selector utility allows easy cyclic stepping through the agents list.
-        '''
         self._agent_selector.reinit(self.agents)
         self.agent_selection = self._agent_selector.next()
 
-    def render(self, mode="rgb_array", verbosity: int = 1):
+    def render(self, mode="rgb_array", verbosity: int = 1) -> np.array:
+        """
+        Create canvas of the environment.
+
+        :param mode: Select color or gray environment.
+        :param verbosity:
+        :return: Array of the environment.
+        """
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
             canvas = environment_object.render(canvas, self, verbosity)
         return canvas
 
-    def observe(self, agent: str):
+    def observe(self, agent: str) -> np.array:
+        """
+        Give observation of the tank.
+
+        :param agent: The tank you want an observation from.
+        :return: gym box of the observation .
+        """
         observation = self.tanks[self.agent_name_mapping[agent]].observe(self)
         return observation
 
-    def step(self, action):
+    def step(self, action) -> None:
+        """
+        Take step in the environment.
+
+        :param action:
+        :return: None
+        """
         if self.dones[self.agent_selection]:
             self._was_done_step(None)
             return None
@@ -112,10 +150,18 @@ class TankEnv(AECEnv):
             self.dones = {agent: True for agent in self.agents}
 
         self.agent_selection = self._agent_selector.next()
-
         self._accumulate_rewards()
 
-    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> Set[Tuple[Optional[EnvObj], np.array]]:
+    def shoot_ray(self, origin: np.array, ray_direction: float, ignore_objects: Set[EnvObj]) -> \
+            Set[Tuple[Optional[EnvObj], np.array]]:
+        """
+        Draws lines for both canon laser and LIDAR laser.
+
+        :param origin: Starting point of the laser.
+        :param ray_direction: Direction of the laser.
+        :param ignore_objects: Set of objects that will be ignored.
+        :return: points of intersection between object and laser.
+        """
         ox, oy = origin
         arena_width, arena_height = self.arena_size
         # Create set of intersection points, starting with the borders of the arena
