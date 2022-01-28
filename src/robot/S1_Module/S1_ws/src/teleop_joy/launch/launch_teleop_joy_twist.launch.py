@@ -1,7 +1,10 @@
+"""This file contains the launch function for the package 'teleop_joy'"""
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
+    """This function contains the launch description."""
     return LaunchDescription([
         Node(
             package="teleop_joy",
