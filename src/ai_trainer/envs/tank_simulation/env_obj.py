@@ -50,7 +50,7 @@ class EnvObj:
         cv2.polylines(canvas, np.int32([polygon]), True, (255, 255, 255), 2)
         return canvas
 
-    def angle_inside_ray(self, origin: np.array, direction: float) -> float:
+    def angle_relative_ray(self, origin: np.array, direction: float) -> float:
         """
         Calculate angle of this object relative to the given ray.
 
