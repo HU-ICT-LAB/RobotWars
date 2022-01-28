@@ -20,6 +20,9 @@ extras = {
         "MyQR",
     ],
     "ai_trainer": [
+        "opencv-contrib-python",
+        "PYyaml",
+        "pygame==2.0.3",
         "stable-baselines3",
         "gym",
         "supersuit @ git+https://git@github.com/RichardDev01/SuperSuit",
@@ -28,11 +31,16 @@ extras = {
         "wandb",
         "tensorboard",
     ],
+
     "game_leader": [
         "flask",
-        "flask-sqlalchemy"
+        "flask-cors",
+        "requests"
     ],
-    "robot": []
+    "robot": [
+        "flask",
+        "flask-cors"
+    ]
 }
 # Overarching requirements
 extras['all'] = list(chain.from_iterable(extras.values()))

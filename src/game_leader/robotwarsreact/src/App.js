@@ -1,7 +1,7 @@
 import './App.css';
-import MenuPage from "./pages/menu_page"
-import CreateGamePage from "./pages/create_game_page"
-import GameOverviewPage from "./pages/game_overview_page"
+import MenuPage from "./pages/MenuPage"
+import CreateGamePage from "./pages/CreateGamePage"
+import GameOverviewPage from "./pages/GameOverviewPage"
 import { Routes, Route } from "react-router-dom"
 
 export default function App() {
