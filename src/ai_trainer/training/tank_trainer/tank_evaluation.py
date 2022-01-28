@@ -1,3 +1,4 @@
+"""Visualise the model trained for multi agent tank trainer."""
 from cv2 import cv2
 from stable_baselines3 import PPO
 import supersuit as ss

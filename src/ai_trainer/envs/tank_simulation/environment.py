@@ -1,3 +1,4 @@
+"""Create custom environment for tank simulation."""
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
 from pettingzoo import AECEnv

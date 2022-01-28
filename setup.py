@@ -22,7 +22,7 @@ extras = {
     "ai_trainer": [
         "opencv-contrib-python",
         "PYyaml",
-        "pygame==2.0.3",
+        "pygame>2.0.0",
         "stable-baselines3",
         "gym",
         "supersuit @ git+https://git@github.com/RichardDev01/SuperSuit",
