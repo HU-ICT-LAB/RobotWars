@@ -23,19 +23,29 @@ class SACTests(unittest.TestCase):
         self.default = SAC("MlpPolicy", self.env)
         self.custom = DatabaseSAC("MlpPolicy", self.rwf, self.env.observation_space, self.env.action_space)
 
-    def test_collect_rollouts(self):
-        """Test whether the algorithms call the collect_rollouts method properly."""
-        self.default.collect_rollouts(self.default.env, CheckpointCallback(1000, "testoutputs/"),
-                                      TrainFreq(1, TrainFrequencyUnit.STEP), self.rpbdefault)
-        self.custom.collect_rollouts(self.custom.env, CheckpointCallback(1000, "testoutputs/"),
-                                     TrainFreq(1, TrainFrequencyUnit.STEP), self.rpbcustom)
-
     def test__store_transitions(self):
         """Test whether the algorithms store data properly."""
-        A = np.array([1])
+        A = np.array([-1])
         R = np.array([-1])
-        Sn = np.array([8])
+        Sn = np.array([0, 0, 0])
         d = np.array([0])
         i = [{"loss": 0}]
         self.default._store_transition(self.rpbdefault, A, Sn, R, d, i)
         self.custom._store_transition(self.rpbcustom, A, Sn, R, d, i)
+
+    def test_collect_rollouts(self):
+        """Test whether the algorithms call the collect_rollouts method properly."""
+        # TODO: Navigate to pendulum.py (use debugger) and remove indexing on `u`.
+        # TODO:
+        A = np.array([-1])
+        R = np.array([-1])
+        Sn = np.array([0,0,0])
+        d = np.array([0])
+        i = [{"loss": 0}]
+        self.default.env.reset()
+        self.default._store_transition(self.rpbdefault, A, Sn, R, d, i)
+        self.custom._store_transition(self.rpbcustom, A, Sn, R, d, i)
+        self.default.collect_rollouts(self.default.env, CheckpointCallback(1000, "testoutputs/"),
+                                      TrainFreq(1, TrainFrequencyUnit.STEP), self.rpbdefault)
+        self.custom.collect_rollouts(self.custom.env, CheckpointCallback(1000, "testoutputs/"),
+                                     TrainFreq(1, TrainFrequencyUnit.STEP), self.rpbcustom)

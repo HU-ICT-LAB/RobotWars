@@ -143,10 +143,10 @@ class DatabaseSAC(SAC):
                                    transitions[j].reward, np.array([0]), [{"robotid": transitions[j].robotid}])
             callback.update_locals(locals())
             if callback.on_step() is False:
-                return RolloutReturn(episode_timesteps=num_collected_steps * env.num_envs,
+                return RolloutReturn(0.0, episode_timesteps=num_collected_steps * env.num_envs,
                                      n_episodes=num_collected_episodes, continue_training=False)
 
         callback.on_rollout_end()
 
-        return RolloutReturn(episode_timesteps=num_collected_steps * env.num_envs,
+        return RolloutReturn(0.0, episode_timesteps=num_collected_steps * env.num_envs,
                              n_episodes=num_collected_episodes, continue_training=True)
