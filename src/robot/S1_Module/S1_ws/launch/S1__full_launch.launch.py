@@ -1,12 +1,13 @@
-""""Launch file to start all nodes containes in packages 'teleop_joy' and 'S1_Master'"""
+"""Launch file to start all nodes containes in packages 'teleop_joy' and 'S1_Master'."""
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
+
 def generate_launch_description():
-    """The launch description function"""
+    """This function contains the launch description."""
     S1_driver_1 = IncludeLaunchDescription(
 
         PythonLaunchDescriptionSource([os.path.join(

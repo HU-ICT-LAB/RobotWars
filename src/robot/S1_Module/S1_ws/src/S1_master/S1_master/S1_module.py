@@ -1,9 +1,9 @@
+"""This file contains a node to control a connected Robomaster-S1."""
 import rclpy
 from rclpy.node import Node
-
 from robomaster import robot as robomaster_robot
-
 import geometry_msgs.msg
+
 
 #The max movement speed of the chassis and gimball, denoted with x,y,z axis
 MAX_SPEED__CHASSIS = [30.0, 30.0, 0.0]
@@ -19,8 +19,8 @@ class S1_driver(Node):
     It subscribes to the /cmd_vel topic to obtain movement instructions.
     It also subscribes to the /blast topic to obtain when to fire
     """
-
     def __init__(self, sn):
+        """This is an initializer function."""
 
         #Initialize the node
         super().__init__('S1_driver')
@@ -65,7 +65,7 @@ class S1_driver(Node):
 
     def __del__(self):
         """
-        A destructor thats called at the end of the program
+        this is an destructor thats called at the end of the program.
         """
         #Close the robomaster connection
         print("Ending connection with robomaster...")
@@ -76,8 +76,8 @@ class S1_driver(Node):
 
     def failsafeCallback(self):
         """
-        This callback function triggers when the failsafe timer method runs out, and fully stops the S1's movement.
-        The timer resets after each succeful command execution, but prevents the system from damaging itself after an unforseen event causes the S1 to driver aimlesly
+        This is a callback function that triggers when the failsafe timer method runs out, and fully stops the S1's movement.
+        The timer resets after each succeful command execution, but prevents the system from damaging itself after an unforseen event causes the S1 to driver aimlesly.
         """
 
         #Stop the chassis's movement
@@ -90,7 +90,7 @@ class S1_driver(Node):
 
     def stopMovement__Chassis(self):
         """
-        Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement 
+        Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement. 
         """
         
         self.robot.chassis.driver_speed(0.0, 0.0)
@@ -103,7 +103,7 @@ class S1_driver(Node):
 
     def clampValue__float(self, value, max_val, min_val):
         """
-        This function clamps a float value between a min and a max
+        This function clamps a float value between a min and a max.
         """
         #Initialize the guard clause
         if not isinstance(value, float):
@@ -121,6 +121,10 @@ class S1_driver(Node):
 
 
     def twistCallback(self, msg):
+        """
+        This is a callback function that triggers when twist messages are received on the /cmd_vel topic.
+        """
+
         #Initialize the guard clause
         if not isinstance(msg, geometry_msgs.msg.Twist):
             raise Exception("'msg' parameter received from callback is not of type 'Twist'. Instead got: '{}'".format(type(msg)))
