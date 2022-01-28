@@ -50,13 +50,13 @@ class EnvObj:
         cv2.polylines(canvas, np.int32([polygon]), True, (255, 255, 255), 2)
         return canvas
 
-    def angle_inside_frustum(self, origin: np.array, direction: float) -> float:
+    def angle_inside_ray(self, origin: np.array, direction: float) -> float:
         """
-        Calculate the radians of an angle.
+        Calculate angle of this object relative to the given ray.
 
-        :param origin: start point of the line.
+        :param origin: origin point of the ray.
         :param direction: direction of angle.
-        :return: radians of the from the point.
+        :return: radians angle relative to the ray.
         """
         adjacent, opposite = (self.get_location() - origin) @ create_2d_rotation_matrix(-direction)
         return atan2(opposite, adjacent)
