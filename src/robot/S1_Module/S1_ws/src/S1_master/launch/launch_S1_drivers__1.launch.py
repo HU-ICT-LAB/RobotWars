@@ -1,4 +1,4 @@
-"""This file contains the launch functionalities for the ROS2 package 'S1_Module'."""
+"""This file launches the functionalities for the ROS2 package 'S1_Module'."""
 from launch import LaunchDescription
 from launch_ros.actions import Node
 

@@ -1,4 +1,4 @@
-"""This file contains the launch discription to launch all nodes contained packages 'teleop_joy' and 'S1_Master'."""
+"""This file contains a function that describes how the nodes inside the teleop_joy and S1_master packages should be launched."""
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription

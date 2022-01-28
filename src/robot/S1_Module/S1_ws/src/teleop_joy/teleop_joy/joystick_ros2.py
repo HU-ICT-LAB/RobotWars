@@ -166,13 +166,12 @@ JOYSTICK_CODE_VALUE_MAP = {
     'Microsoft X-Box One S pad': (XONE_CODE_MAP, XONE_VALUE_MAP)
 }
 
+
 class JoystickRos2(Node):
     """This class inherits from the ROS2 node and publishes controller input to /joy."""
 
-
     def __init__(self):
         super().__init__('joystick_ros2')
-
         # Node params
         # TODO : use rosparam
         self.deadzone = 0.05
@@ -195,7 +194,7 @@ class JoystickRos2(Node):
         self.last_publish_time = 0
 
     def publish_joy(self):
-        """This function publishes the controller input on the /joy topic."""
+        """This function publishes the controller inputs on the /joy topic."""
         current_time = modf(time.time())
         self.joy.header.stamp.sec = int(current_time[1])
         self.joy.header.stamp.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
@@ -258,8 +257,11 @@ class JoystickRos2(Node):
                                 self.last_event = event
                             elif (event.ev_type == 'Absolute'):
                                 value_range = JOYSTICK_CODE_VALUE_MAP[event.device.name][1][key_code]
-                                self.joy.axes[key_code] = self.normalize_key_value(value_range[0], value_range[1], event.state)
-                                if (self.last_event is None) or (self.last_event.code != event.code) or (time.time() - self.last_publish_time > self.coalesce_interval):
+                                self.joy.axes[key_code] = self.normalize_key_value(value_range[0], 
+                                                                                   value_range[1], 
+                                                                                   event.state)
+                                if (self.last_event is None) or (self.last_event.code != event.code) or 
+                                   (time.time() - self.last_publish_time > self.coalesce_interval):
                                     self.publish_joy()
                                 self.last_event = event
                 else:
