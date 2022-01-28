@@ -1,3 +1,4 @@
+"""This file contains a ROS2 node that reads controller input."""
 # Copyright 2017 Muhammad Furqan Habibi
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +16,12 @@
 import platform
 import time
 from math import modf
-
 import rclpy
 from rclpy.node import Node
-
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Header
 from teleop_joy.inputs import devices, UnpluggedError
+
 
 # Microsoft X-Box 360 pad
 XINPUT_CODE_MAP = {
@@ -43,7 +43,7 @@ XINPUT_CODE_MAP = {
     'BTN_SELECT': 7,
     'BTN_MODE': 8,
     'BTN_THUMBL': 9,
-    'BTN_THUMBR':10
+    'BTN_THUMBR': 10
 }
 
 XINPUT_VALUE_MAP = {
@@ -77,7 +77,7 @@ PS4_CODE_MAP = {
     'BTN_TR2': 7,
     'BTN_MODE': 8,
     'BTN_SELECT': 9,
-    'BTN_START':10
+    'BTN_START': 10
 }
 
 PS4_VALUE_MAP = {
@@ -111,7 +111,7 @@ F710_CODE_MAP = {
     'BTN_START': 7,
     'BTN_MODE': 8,
     'BTN_THUMBL': 9,
-    'BTN_THUMBR':10
+    'BTN_THUMBR': 10
 }
 
 F710_VALUE_MAP = {
@@ -145,7 +145,7 @@ XONE_CODE_MAP = {
     'BTN_START': 7,
     'BTN_MODE': 8,
     'BTN_THUMBL': 9,
-    'BTN_THUMBR':10
+    'BTN_THUMBR': 10
 }
 
 XONE_VALUE_MAP = {
@@ -167,6 +167,8 @@ JOYSTICK_CODE_VALUE_MAP = {
 }
 
 class JoystickRos2(Node):
+    """This class inherits from the ROS2 node and publishes controller input to /joy."""
+
 
     def __init__(self):
         super().__init__('joystick_ros2')
@@ -191,9 +193,9 @@ class JoystickRos2(Node):
         # logic params
         self.last_event = None
         self.last_publish_time = 0
-        
 
     def publish_joy(self):
+        """This function publishes the controller input on the /joy topic."""
         current_time = modf(time.time())
         self.joy.header.stamp.sec = int(current_time[1])
         self.joy.header.stamp.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
@@ -201,6 +203,7 @@ class JoystickRos2(Node):
         self.last_publish_time = time.time()
 
     def normalize_key_value(self, key_value_min, key_value_max, key_value):
+        """This function normalizes a value between a min and a max."""
         normalized = ((key_value - key_value_min) / (key_value_max - key_value_min) * (-2)) + 1
         if (abs(normalized) > self.deadzone):
             return normalized
@@ -208,6 +211,7 @@ class JoystickRos2(Node):
             return 0.0
 
     def run(self):
+        """This function contains the main loop of this class."""
         device_manager = devices
         while rclpy.ok():
             # get the first joystick
