@@ -112,14 +112,14 @@ class Tank(EnvObj):
         insight = [
             tank
             for tank in tanks
-            if -self.fov[0] / 2 < tank.angle_inside_frustum(origin, t_z + gimbal_yaw - pi / 2) < self.fov[0] / 2
+            if -self.fov[0] / 2 < tank.angle_relative_ray(origin, t_z + gimbal_yaw - pi / 2) < self.fov[0] / 2
             # TODO: check if view is blocked
         ]
         if len(insight) > 0:
             closest = min(insight, key=lambda x: np.linalg.norm(x.get_location() - origin))
             distance = np.linalg.norm(closest.get_location() - origin)
             bbox_center = np.array(
-                [closest.angle_inside_frustum(origin, t_z + gimbal_yaw - pi / 2) / (self.fov[0] / 2), 0.])
+                [closest.angle_relative_ray(origin, t_z + gimbal_yaw - pi / 2) / (self.fov[0] / 2), 0.])
             bbox_size = np.array([min(distance / 4, 1), min(distance / 4, 1)])
         else:
             bbox_center = np.zeros(2)
@@ -187,12 +187,12 @@ class Tank(EnvObj):
             insight = [
                 tank
                 for tank in tanks
-                if -self.fov[0] / 2 < tank.angle_inside_frustum(origin, rect_z + yaw - pi / 2) < self.fov[0] / 2
+                if -self.fov[0] / 2 < tank.angle_relative_ray(origin, rect_z + yaw - pi / 2) < self.fov[0] / 2
             ]
             if len(insight) > 0:
                 closest = min(insight, key=lambda x: np.linalg.norm(x.get_location() - origin))
                 distance = np.linalg.norm(closest.get_location() - origin)
-                angle_inside = closest.angle_inside_frustum(origin, rect_z + yaw - pi / 2)
+                angle_inside = closest.angle_relative_ray(origin, rect_z + yaw - pi / 2)
                 bbox = np.array(
                     [cos(angle_inside + rect_z + yaw - pi / 2),
                      sin(angle_inside + rect_z + yaw - pi / 2)]) * (1 / distance) + origin

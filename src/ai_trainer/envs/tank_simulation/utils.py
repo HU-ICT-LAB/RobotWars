@@ -3,8 +3,6 @@ from typing import Tuple, Set
 from math import sin, cos
 import numpy as np
 
-from ai_trainer.envs.tank_simulation.env_obj import EnvObj
-
 
 def create_2d_rotation_matrix(angle: float) -> np.array:
     """
