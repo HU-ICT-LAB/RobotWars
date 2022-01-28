@@ -35,8 +35,6 @@ class SACTests(unittest.TestCase):
 
     def test_collect_rollouts(self):
         """Test whether the algorithms call the collect_rollouts method properly."""
-        # TODO: Navigate to pendulum.py (use debugger) and remove indexing on `u`.
-        # TODO:
         A = np.array([-1])
         R = np.array([-1])
         Sn = np.array([0,0,0])
