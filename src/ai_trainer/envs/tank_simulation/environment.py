@@ -1,4 +1,3 @@
-"""Create custom environment for tank simulation."""
 from typing import List, Tuple, Set, Optional
 from math import sin, cos, tan, radians, pi
 from pettingzoo import AECEnv
@@ -27,7 +26,7 @@ class TankEnv(AECEnv):
     def __init__(self, step_size: float = 1 / 20, game_session_length: float = 20, canvas_square_size: int = 700,
                  arena_square_size: float = 5., n_lidar_rays: int = 20, n_tanks: int = 3,
                  max_drive_speeds: Tuple[float, float, float, float, float] =
-                 (2., 2., radians(300), radians(800), radians(800))):
+                 (2., 2., radians(300), radians(800), radians(800)), verbosity: int = 1):
         super().__init__()
         self.step_size = step_size  # 20 environment steps represent 1 second
         self.game_session_length = game_session_length  # length of one game/episode in seconds
@@ -36,6 +35,7 @@ class TankEnv(AECEnv):
         self.n_lidar_rays = n_lidar_rays  # number of rays to simulate lidar
         self.n_tanks = n_tanks
         self.max_drive_speeds = max_drive_speeds  # chassis-x,y,z, gimbal-pitch,yaw
+        self.verbosity = verbosity
 
         self.environment_objects: List[EnvObj] = []
         self.time = 0.
@@ -99,7 +99,7 @@ class TankEnv(AECEnv):
         self._agent_selector.reinit(self.agents)
         self.agent_selection = self._agent_selector.next()
 
-    def render(self, mode="rgb_array", verbosity: int = 1) -> np.array:
+    def render(self, mode="rgb_array") -> np.array:
         """
         Create canvas of the environment.
 
@@ -110,7 +110,7 @@ class TankEnv(AECEnv):
         canvas_width, canvas_height = self.canvas_size
         canvas = np.zeros((canvas_width, canvas_height, 3))
         for environment_object in self.environment_objects:
-            canvas = environment_object.render(canvas, self, verbosity)
+            canvas = environment_object.render(canvas, self, self.verbosity)
         return canvas
 
     def observe(self, agent: str) -> np.array:
