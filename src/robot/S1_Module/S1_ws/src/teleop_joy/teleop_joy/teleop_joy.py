@@ -11,6 +11,7 @@ VERBOSE_PRINT = False
 
 class TeleopJoy(Node):
     """This class inherits from the ROS2 node class and converts messages from the /joy topic to twist messages on the /cmd_vel topic."""
+
     def __init__(self):
         super().__init__("teleop_joy")
 
@@ -34,7 +35,8 @@ class TeleopJoy(Node):
         self.joy_subscriber
 
     def joy_callback(self, joy_msg):
-        """This function is called by the node every time a joy message is received. 
+        """This function is called by the node every time a joy message is received.
+
         posted on the '/joy' topic. It is converted to a twist message and send over the publisher.
         """
         # Extract the joy message data
@@ -56,19 +58,20 @@ class TeleopJoy(Node):
         twist.linear.x = linear_x
         twist.linear.y = linear_y
         twist.linear.z = 0.0
-        twist.angular.x = angular_pitch 
-        twist.angular.y = angular_yaw 
+        twist.angular.x = angular_pitch
+        twist.angular.y = angular_yaw
         twist.angular.z = 0.0
         # Print if running in verbose mode
         if VERBOSE_PRINT:
             print("\n============================\nPublishing:\n")
-            print("Linear:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.linear.x, twist.linear.y, twist.linear.z)) 
-            print("Angular:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.angular.x, twist.angular.y, twist.angular.z)) 
+            print("Linear:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.linear.x, twist.linear.y, twist.linear.z))
+            print("Angular:\n\tx: {}\n\ty: {}\n\tz:{}".format(twist.angular.x, twist.angular.y, twist.angular.z))
         # Publish the message
         self.twist_publisher.publish(twist)
 
+
 def main(args=None):
-    """This main initializes the node."""
+    """This main function initializes the node."""
     # Initialize the ros node
     rclpy.init(args=args)
     teleop_joy = TeleopJoy()
@@ -76,7 +79,6 @@ def main(args=None):
     # Destroy the node explicitly
     teleop_joy.destroy_node()
     rclpy.shutdown()
-
 
 if __name__ == '__main__':
     main()

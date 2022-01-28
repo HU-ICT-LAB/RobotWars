@@ -260,9 +260,8 @@ class JoystickRos2(Node):
                                 self.joy.axes[key_code] = self.normalize_key_value(value_range[0], 
                                                                                    value_range[1], 
                                                                                    event.state)
-                                if (self.last_event is None) or (self.last_event.code != event.code) or 
-                                   (time.time() - self.last_publish_time > self.coalesce_interval):
-                                    self.publish_joy()
+                                if (self.last_event is None) or (self.last_event.code != event.code) or (time.time() - self.last_publish_time > self.coalesce_interval):
+                                self.publish_joy()
                                 self.last_event = event
                 else:
                     break

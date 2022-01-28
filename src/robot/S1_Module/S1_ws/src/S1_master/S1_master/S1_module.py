@@ -12,12 +12,14 @@ MAX_SPEED__GIMBAL = [30.0, 30.0, 0.0]
 MIN_SPEED__CHASSIS = [-30.0, -30.0, 0.0]
 MIN_SPEED__GIMBAL = [-30.0, -30.0, 0.0]
 
+
 class S1_driver(Node):
-    """
-    This class is used for all communications with a robomaster S1 module. 
+    """This class is used for all communications with a robomaster S1 module.
+
     It subscribes to the /cmd_vel topic to obtain movement instructions.
-    It also subscribes to the /blast topic to obtain when to fire
+    It also subscribes to the /blast topic to obtain when to fire.
     """
+
     def __init__(self, sn):
         """This is an initializer function."""
         # Initialize the node
@@ -105,8 +107,9 @@ class S1_driver(Node):
         angular_speed[0] = self.clampValue__float(msg.angular.x, MAX_SPEED__GIMBAL[0], MIN_SPEED__GIMBAL[0])
         angular_speed[1] = self.clampValue__float(msg.angular.y, MAX_SPEED__GIMBAL[1], MIN_SPEED__GIMBAL[1])
         # Instruct the S1's gimbal to turn according to the angular commands
-        self.robot.gimbal.drive_speed(angular_speed[0], angular_speed[1])       
+        self.robot.gimbal.drive_speed(angular_speed[0], angular_speed[1])
         # Instruct the S1's chassis to drive according to the linear commands
+
 
 def main(args=None):
     """This function is the main and runs the node."""
@@ -122,6 +125,7 @@ def main(args=None):
     # Destroy the node explicitly
     S1.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()
