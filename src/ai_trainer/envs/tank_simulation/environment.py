@@ -104,7 +104,6 @@ class TankEnv(AECEnv):
         Create canvas of the environment.
 
         :param mode: Select color or gray environment.
-        :param verbosity:
         :return: Array of the environment.
         """
         canvas_width, canvas_height = self.canvas_size
