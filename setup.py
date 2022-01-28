@@ -5,9 +5,9 @@ from itertools import chain
 # The basic requirements needed for each type of machine
 install_requires = [
     "mysql.connector",
-    "robomaster==0.1.1.65",
+    "robomaster",
     "opencv-python>=4.2",
-    "numpy"
+    "numpy",
 ]
 
 # Requirements per options
@@ -17,12 +17,21 @@ extras = {
         "Pillow",
         "matplotlib",
         "keyboard",
-        "MyQR"
+        "MyQR",
     ],
-    "ai_trainer": ["opencv-contrib-python",
-                   "PYyaml",
-                   "pygame==2.0.3",
-                   ],
+    "ai_trainer": [
+        "opencv-contrib-python",
+        "PYyaml",
+        "supersuit @ git+https://git@github.com/RichardDev01/SuperSuit",
+        "pettingzoo[butterfly]",
+        "stable-baselines3",
+        "gym",
+        "pygame>2.0.0",
+        "shapely",
+        "wandb",
+        "tensorboard",
+    ],
+
     "game_leader": [
         "flask",
         "flask-cors",
@@ -48,16 +57,11 @@ setuptools.setup(
     name='robotwars',
     description='Robomaster S1 autonomous lasergaming for HU',
     version='0.0.1',
-    package_dir={'robotwars': 'src'},
-    packages=[
-        'robotwars.common',
-        'robotwars.ai_trainer',
-        'robotwars.game_leader',
-        'robotwars.robot'
-    ],
+    package_dir={'': 'src'},
+    packages=setuptools.find_packages('src'),
     install_requires=install_requires,
     extras_require=extras,
-    python_requires='>=3.6',
+    python_requires='>=3.6.6, <3.9',
     keywords=['robomaster', 'robomaster s1', 'lasergame', 's1', 'autonomous', 'reinforcement learning', 'dji'],
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',

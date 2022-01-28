@@ -143,7 +143,15 @@ desktop.ini
 # database
 /game_leader/server/service_account_key.json
 
+
+# Weights and Biases
+src/ai_trainer/training/tank_trainer/wandb
+
+# Tensorboard
+src/ai_trainer/runs
+
+# Trained policies
+src/ai_trainer/trained_policies/*
+
 # rooms for ArUca codes
 /experiments/aruco_markers/*.yaml
-
-
