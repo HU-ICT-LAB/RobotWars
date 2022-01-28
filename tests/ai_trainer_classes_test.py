@@ -37,7 +37,7 @@ class SACTests(unittest.TestCase):
         """Test whether the algorithms call the collect_rollouts method properly."""
         A = np.array([-1])
         R = np.array([-1])
-        Sn = np.array([0,0,0])
+        Sn = np.array([0, 0, 0])
         d = np.array([0])
         i = [{"loss": 0}]
         self.default.env.reset()
