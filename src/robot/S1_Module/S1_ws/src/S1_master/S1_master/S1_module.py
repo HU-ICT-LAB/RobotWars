@@ -21,7 +21,8 @@ class S1_driver(Node):
     """
 
     def __init__(self, sn):
-        """This is an initializer function."""
+        """All function calls."""
+        # """This is an initializer function."""
         # Initialize the node
         super().__init__('S1_driver')
         # Initialize the robot
@@ -55,33 +56,38 @@ class S1_driver(Node):
         self.get_logger().info("After initialization")
 
     def __del__(self):
-        """this function is an destructor thats called at the end of the program."""
+        """All function calls."""
+        # """this function is an destructor thats called at the end of the program."""
         # Close the robomaster connection
         print("Ending connection with robomaster...")
         self.robot.close()
         print("Connection closed!")
 
     def failsafeCallback(self):
-        """This is a callback function that triggers when the failsafe timer method runs out.
-        It fully stops the S1's movement.
-        The timer resets after each succeful command execution, but prevents the system from damaging itself 
-        after an unforseen event causes the S1 to driver aimlesly.
-        """
+        """All function calls."""
+        # """This is a callback function that triggers when the failsafe timer method runs out.
+        # It fully stops the S1's movement.
+        # The timer resets after each succeful command execution, but prevents the system from damaging itself
+        # after an unforseen event causes the S1 to driver aimlesly.
+        # """
         # Stop the chassis's movement
         # stop the gimbal's movement
         # Report the failsafe trigger
         self.get_logger().info("Failsafe triggered after no commands were received before timer runnout")
 
     def stopMovement__Chassis(self):
-        """Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement."""
+        """All function calls."""
+        # """Calling this function will set the linear speed of the S1's chassis to 0, fully halting its movement."""
         self.robot.chassis.driver_speed(0.0, 0.0)
 
     def stopMovement__Gimbal(self):
-        """Calling this function will set the linear speed of the S1's gimbal to 0, fully halting its movement."""
+        """All function calls."""
+        # """Calling this function will set the linear speed of the S1's gimbal to 0, fully halting its movement."""
         self.robot.gimbal.drive_speed(0.0, 0.0)
 
     def clampValue__float(self, value, max_val, min_val):
-        """This function clamps a float value between a min and a max."""
+        """All function calls."""
+        # """This function clamps a float value between a min and a max."""
         # Initialize the guard clause
         if not isinstance(value, float):
             raise Exception("Parameter 'value' is not of type 'float'. Instead got: '{}'".format(type(value)))
@@ -95,7 +101,8 @@ class S1_driver(Node):
         return max(min(max_val, value), min_val)
 
     def twistCallback(self, msg):
-        """This is a callback function that triggers when twist messages are received on the /cmd_vel topic."""
+        """All function calls."""
+        # """This is a callback function that triggers when twist messages are received on the /cmd_vel topic."""
         # Initialize the guard clause
         if not isinstance(msg, geometry_msgs.msg.Twist):
             raise Exception("'msg' parameter received from callback is not of type 'Twist'. Instead got: '{}'".format(type(msg)))
@@ -112,7 +119,8 @@ class S1_driver(Node):
 
 
 def main(args=None):
-    """This function is the main and runs the node."""
+    """All function calls."""
+    # """This function is the main and runs the node."""
     # Initialize rclpy
     rclpy.init(args=args)
     # Define serial number of robot

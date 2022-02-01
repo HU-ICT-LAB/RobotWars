@@ -1,4 +1,5 @@
-"""This file contains a function that describes how the nodes inside the teleop_joy and S1_master packages should be launched."""
+"""All service calls."""
+# """This file contains a function that describes how the nodes inside the teleop_joy and S1_master packages should be launched."""
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -7,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    """This function contains the launch description."""
+    """All service calls."""
     S1_driver_1 = IncludeLaunchDescription(
 
         PythonLaunchDescriptionSource([os.path.join(

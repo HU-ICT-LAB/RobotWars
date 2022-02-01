@@ -4,7 +4,8 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    """This function contains the launch description."""
+    """All function calls."""
+    # """This function contains the launch description."""
     return LaunchDescription([
         Node(
             package='S1_master',

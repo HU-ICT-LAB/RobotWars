@@ -35,13 +35,14 @@ class TeleopJoy(Node):
         self.joy_subscriber
 
     def joy_callback(self, joy_msg):
-        """This function is called by the node every time a joy message is received.
+        """All function calls."""
+        # """This function is called by the node every time a joy message is received.
 
-        posted on the '/joy' topic. It is converted to a twist message and send over the publisher.
-        """
+        # posted on the '/joy' topic. It is converted to a twist message and send over the publisher.
+        # """
         # Extract the joy message data
         joy_axes = joy_msg.axes
-        # joy_buttons = joy_msg.buttons 
+        # joy_buttons = joy_msg.buttons
         # Extract the linear velocity in x and y direction
         linear_x = joy_axes[0] * self.get_parameter('linear_speed__x').value
         linear_y = joy_axes[1] * self.get_parameter('linear_speed__y').value
@@ -51,7 +52,8 @@ class TeleopJoy(Node):
         self.teleop_publish(linear_x, linear_y, angular_pitch, angular_yaw)
 
     def teleop_publish(self, linear_x, linear_y, angular_pitch, angular_yaw):
-        """This function publishes a twist message on the /cmd_vel topic."""
+        """All function calls."""
+        # """This function publishes a twist message on the /cmd_vel topic."""
         # Create a twist message instance
         twist = geometry_msgs.msg.Twist()
         # Multiply the linear joy inputs with the specified speeds
@@ -71,7 +73,8 @@ class TeleopJoy(Node):
 
 
 def main(args=None):
-    """This main function initializes the node."""
+    """All function calls."""
+    # """This main function initializes the node."""
     # Initialize the ros node
     rclpy.init(args=args)
     teleop_joy = TeleopJoy()
@@ -79,6 +82,7 @@ def main(args=None):
     # Destroy the node explicitly
     teleop_joy.destroy_node()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

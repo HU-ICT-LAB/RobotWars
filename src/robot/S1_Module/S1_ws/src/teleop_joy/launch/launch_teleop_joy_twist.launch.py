@@ -1,10 +1,10 @@
-"""This file contains the function that describes how nodes inside the package 'teleop_joy' should be launched."""
+"""A file that contains the function that describes how nodes inside the package 'teleop_joy' should be launched."""
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    """This function launches the nodes contained in the package 'teleop_joy'."""
+    """All function calls."""
     return LaunchDescription([
         Node(
             package="teleop_joy",

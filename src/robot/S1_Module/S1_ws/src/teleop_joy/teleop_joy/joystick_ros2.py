@@ -194,7 +194,7 @@ class JoystickRos2(Node):
         self.last_publish_time = 0
 
     def publish_joy(self):
-        """This function publishes the controller inputs on the /joy topic."""
+        """All function calls."""
         current_time = modf(time.time())
         self.joy.header.stamp.sec = int(current_time[1])
         self.joy.header.stamp.nanosec = int(current_time[0] * 1000000000) & 0xffffffff
@@ -202,7 +202,7 @@ class JoystickRos2(Node):
         self.last_publish_time = time.time()
 
     def normalize_key_value(self, key_value_min, key_value_max, key_value):
-        """This function normalizes a value between a min and a max."""
+        """All function calls."""
         normalized = ((key_value - key_value_min) / (key_value_max - key_value_min) * (-2)) + 1
         if (abs(normalized) > self.deadzone):
             return normalized
@@ -210,7 +210,7 @@ class JoystickRos2(Node):
             return 0.0
 
     def run(self):
-        """This function contains the main loop of this class."""
+        """All function calls."""
         device_manager = devices
         while rclpy.ok():
             # get the first joystick
@@ -257,22 +257,26 @@ class JoystickRos2(Node):
                                 self.last_event = event
                             elif (event.ev_type == 'Absolute'):
                                 value_range = JOYSTICK_CODE_VALUE_MAP[event.device.name][1][key_code]
-                                self.joy.axes[key_code] = self.normalize_key_value(value_range[0], 
-                                                                                   value_range[1], 
+                                self.joy.axes[key_code] = self.normalize_key_value(value_range[0],
+                                                                                   value_range[1],
                                                                                    event.state)
-                                if (self.last_event is None) or (self.last_event.code != event.code) or (time.time() - self.last_publish_time > self.coalesce_interval):
-                                self.publish_joy()
+                                if (self.last_event is None
+                                        or self.last_event.code != event.code
+                                        or time.time() - self.last_publish_time > self.coalesce_interval):
+                                    self.publish_joy()
                                 self.last_event = event
                 else:
                     break
-            ## autorepeat
-            if ((self.autorepeat_rate > 0.0) and (time.time() - self.last_publish_time > 1/self.autorepeat_rate)):
+            # autorepeat
+            if ((self.autorepeat_rate > 0.0) and (time.time() - self.last_publish_time > 1 / self.autorepeat_rate)):
                 self.publish_joy()
 
             # sleep to decrease cpu usage
             time.sleep(self.sleep_time)
 
+
 def main(args=None):
+    """All function calls."""
     rclpy.init(args=args)
 
     joystick_ros2 = JoystickRos2()
