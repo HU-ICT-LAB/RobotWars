@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-
+import SelectBox from "./SelectBox";
 import TextLine from "./TextLine";
 
 export default function RobotInfo() {
@@ -26,8 +26,12 @@ export default function RobotInfo() {
   return (
     <div style={styles.robotInfo}>
       <h2 style={styles.title}>Robot Information</h2>
+        <SelectBox items={robots} onChange={handleChange}></SelectBox>
       <div style={styles.fields}>
-
+        <TextLine type={"Name"} value={selectedRobot === null ? "" : selectedRobot.name}/>
+        <TextLine type={"Description"} value={selectedRobot === null ? "" : selectedRobot.description}/>
+        <TextLine type={"HP"} value={selectedRobot === null ? "" : selectedRobot.hp}/>
+        <TextLine type={"Location"} value={selectedRobot === null ? "" : selectedRobot.location}/>
       </div>
     </div>
   );
@@ -64,9 +68,4 @@ const styles = {
     color: "white",
     marginTop: "5px",
   },
-  selecter: {
-    width: "200px",
-    height: "20px",
-    borderRadius: "10px",
-  }
 };
