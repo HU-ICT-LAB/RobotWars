@@ -6,7 +6,7 @@ import threading
 
 import mysql.connector.errors as db_errors
 
-from src.common.database import connect, perform_write_query
+from src.common.data.database import connect, perform_write_query
 
 db = ""
 robot1Ip = os.environ.get("ROBOT1IP")  # Set these variables in your configuration.
@@ -30,7 +30,7 @@ def new_game(game_information):
     """
     Create a new game and writes it to the database.
 
-    Send "start_game" post requests to all of the robots.
+    Send "start" post requests to all of the robots.
 
     :param: information of the new game.
     :return: all robot responses.
@@ -54,7 +54,7 @@ def new_game(game_information):
                          game_information["robot2Team"],
                          game_information["robot3Team"],
                          game_information["gameHP"],
-                         game_information["gameTime"],
+                         game_time,
                          True), db)
 
     threading.Thread(target=game_timer, args=(game_time, ))
