@@ -1,5 +1,4 @@
 import React, {useState, useEffect} from "react";
-import SelectBox from "./SelectBox";
 import TextLine from "./TextLine";
 
 export default function GameOverview() {
@@ -26,15 +25,7 @@ export default function GameOverview() {
   return (
     <div style={styles.overview}>
       <h2 style={styles.title}>Game information</h2>
-      <SelectBox items={games} onChange={handleChange}></SelectBox>
-      <TextLine type={"Name"} value={selectedGame === null ? "" : selectedGame.name} />
-      <TextLine type={"Description"} value={selectedGame === null ? "" : selectedGame.description} />
-      <TextLine type={"Gamemode"} value={selectedGame === null ? "" : selectedGame.gameMode} />
-      <TextLine type={"Robot 1 Team"} value={selectedGame === null ? "" : selectedGame.robot1Team} />
-      <TextLine type={"Robot 2 Team"} value={selectedGame === null ? "" : selectedGame.robot2Team} />
-      <TextLine type={"Robot 3 Team"} value={selectedGame === null ? "" : selectedGame.robot3Team} />
-      <TextLine type={"Maximum hp of robots"} value={selectedGame === null ? "" : selectedGame.maxHp} />
-      <TextLine type={"Game Time"} value={selectedGame === null ? "" : selectedGame.gameTime} />
+
     </div>
   );
 }
@@ -60,4 +51,9 @@ const styles = {
     width: "100%",
     display: "flex",
   },
+  selecter: {
+    width: "200px",
+    height: "20px",
+    borderRadius: "10px",
+  }
 }

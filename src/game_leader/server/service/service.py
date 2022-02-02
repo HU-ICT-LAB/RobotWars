@@ -54,7 +54,7 @@ def new_game(game_information):
                          game_information["robot2Team"],
                          game_information["robot3Team"],
                          game_information["gameHP"],
-                         game_information["gameTime"],
+                         game_time,
                          True), db)
 
     threading.Thread(target=game_timer, args=(game_time, ))

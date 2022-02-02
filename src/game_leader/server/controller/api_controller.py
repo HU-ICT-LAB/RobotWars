@@ -1,6 +1,6 @@
 """All api calls."""
 import mysql.connector.errors as db_errors
-from flask import Flask, jsonify, request, logging
+from flask import Flask, jsonify, request
 from flask_cors import cross_origin
 
 from src.game_leader.server.service.service import new_game, \
@@ -17,14 +17,12 @@ def create_new_game():
 
     :return: response corresponding the state of the request.
     """
-    response = jsonify({"success": True}), 200
-
     try:
-        new_game(request.json)
+        response = jsonify({"success": True, "message": new_game(request.json)}), 200
     except db_errors.Error:
         app.logger.info("create_new_game failed because the connection with the database cannot be made")
         response = jsonify({"success": False, "message": "Connection with database cannot be made"}), 409
-    except Exception as e:  # noqa: B902
+    except Exception:  # noqa: B902
         response = \
             jsonify({"success": False, "message": "Failed to establish a new connection: Robot api not found"}), 404
         app.logger.info("create_new_game failed because the connection with the robots cannot be made.")
@@ -77,9 +75,9 @@ def stop_robots():
 
     try:
         jsonify(stop_all_robots()), 200
-    except Exception as e:  # noqa: B902
+    except Exception:  # noqa: B902
         response = \
-            jsonify({"success": True, "message": "Failed to establish a new connection: Robot api not found"}), 404
+            jsonify({"success": False, "message": "Failed to establish a new connection: Robot api not found"}), 404
         app.logger.info("stop_robots failed because the connection with the robots cannot be made.")
     return response
 
