@@ -135,9 +135,23 @@ dmypy.json
 desktop.ini
 
 # react frontend
-/robotwarsreact/node_modules
-/node_modules
+/src/game_leader/robotwarsreact/node_modules
+/src/game_leader/robotwarsreact/npm-debug.log*
+/src/game_leader/robotwarsreact/yarn-debug.log*
+/src/game_leader/robotwarsreact/yarn-error.log*
 
-/robotwarsreact/npm-debug.log*
-/robotwarsreact/yarn-debug.log*
-/robotwarsreact/yarn-error.log*
+# database
+/game_leader/server/service_account_key.json
+
+
+# Weights and Biases
+src/ai_trainer/training/tank_trainer/wandb
+
+# Tensorboard
+src/ai_trainer/runs
+
+# Trained policies
+src/ai_trainer/trained_policies/*
+
+# rooms for ArUca codes
+/experiments/aruco_markers/*.yaml

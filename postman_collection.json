@@ -1,0 +1,99 @@
+{
+	"info": {
+		"_postman_id": "9252f595-f261-44b6-ac2c-9c79931da98a",
+		"name": "INNO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "post game",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"host": true,
+					"user-agent": true,
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true
+				}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"inno_test_guild_beoordeling\",\r\n    \"description\": \"test\",\r\n    \"gameMode\": \"Free for all\",\r\n    \"gameTime\": 1000,\r\n    \"gameHP\": 500,\r\n    \"robot1Team\": 0,\r\n    \"robot2Team\": 0,\r\n    \"robot3Team\": 0\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/v1/new_game",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"new_game"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "active games",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/v1/active_games",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"active_games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "robots",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/api/v1/robots",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"robots"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
